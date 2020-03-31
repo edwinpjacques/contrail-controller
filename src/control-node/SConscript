@@ -65,7 +65,7 @@ env.Alias("control-node:node_mgr", sdist_gen)
 libcontrail_control_uve = env.Library('control_node_uve',
                                       ControlNodeSandeshGenSrcs);
 
-etcd_incl = os.environ.get('CONTRAIL_ETCD_INCL');
+etcd_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
 
 if etcd_incl:
     env.Prepend(LIBS=[
