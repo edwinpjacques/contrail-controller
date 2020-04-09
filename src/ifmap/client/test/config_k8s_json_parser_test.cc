@@ -35,11 +35,11 @@ using namespace std;
 using namespace autogen;
 using boost::assign::list_of;
 
-class ConfigEtcdPartitionTest : public ConfigK8sPartition
+class ConfigK8sJsonPartitionTest : public ConfigK8sPartition
 {
 public:
     static const int kUUIDReadRetryTimeInMsec = 300000;
-    ConfigEtcdPartitionTest(ConfigK8sClient *client, size_t idx)
+    ConfigK8sJsonPartitionTest(ConfigK8sClient *client, size_t idx)
         : ConfigK8sPartition(client, idx),
           retry_time_ms_(kUUIDReadRetryTimeInMsec)
     {
@@ -96,7 +96,7 @@ private:
     int retry_time_ms_;
 };
 
-class ConfigEtcdJsonParserTest : public ::testing::Test
+class ConfigK8sJsonParserTest : public ::testing::Test
 {
 public:
     void ValidateObjCacheResponse(Sandesh *sandesh,
@@ -156,7 +156,7 @@ public:
     }
 
 protected:
-    ConfigEtcdJsonParserTest() : thread_(&evm_),
+    ConfigK8sJsonParserTest() : thread_(&evm_),
                                  db_(TaskScheduler::GetInstance()->GetTaskId("db::IFMapTable")),
                                  ifmap_server_(new IFMapServer(&db_,
                                                                &graph_,
@@ -170,12 +170,12 @@ protected:
                                  validate_done_(false)
     {
 
-        // Instantiate ETCD test client
-        config_etcd_client_ = dynamic_cast<ConfigEtcdClientTest *>(
+        // Instantiate K8S test client
+        config_k8s_client_ = dynamic_cast<ConfigK8sClientTest *>(
             config_client_manager_->config_db_client());
 
         // Disable etcd watcher
-        config_etcd_client_->set_watch_disable(true);
+        config_k8s_client_->set_watch_disable(true);
 
         // Link config client manager to ifmap_server
         ifmap_server_->set_config_manager(config_client_manager_.get());
@@ -198,7 +198,7 @@ protected:
             port = 5910;
         boost::system::error_code error;
         string hostname(boost::asio::ip::host_name(error));
-        Sandesh::InitGenerator("ConfigEtcdEtcdJsonParserTest", hostname, "IFMapTest",
+        Sandesh::InitGenerator("ConfigK8sJsonParserTest", hostname, "IFMapTest",
                                "Test", &evm_, port, ifmap_sandesh_context_.get());
         std::cout << "Introspect at http://localhost:" << Sandesh::http_port()
                   << std::endl;
@@ -349,55 +349,55 @@ protected:
     void ParseEventsJson(std::string events_file)
     {
         config_client_manager_->set_end_of_rib_computed(true);
-        config_etcd_client_->ParseEventsJson(events_file);
+        config_k8s_client_->ParseEventsJson(events_file);
     }
 
     void FeedEventsJson()
     {
-        config_etcd_client_->FeedEventsJson();
+        config_k8s_client_->FeedEventsJson();
     }
 
     string GetJsonValue(const string &uuid)
     {
-        string val = config_etcd_client_->GetJsonValue(uuid);
+        string val = config_k8s_client_->GetJsonValue(uuid);
         return val;
     }
 
-    ConfigEtcdPartitionTest *GetConfigEtcdPartition(
+    ConfigK8sJsonPartitionTest *GetConfigK8sPartition(
         string &uuid)
     {
-        ConfigEtcdClientTest *config_etcd_client =
-            dynamic_cast<ConfigEtcdClientTest *>(
+        ConfigK8sClientTest *config_etcd_client =
+            dynamic_cast<ConfigK8sClientTest *>(
                 config_client_manager_.get()->config_db_client());
-        return (dynamic_cast<ConfigEtcdPartitionTest *>(config_etcd_client->GetPartition(uuid)));
+        return (dynamic_cast<ConfigK8sJsonPartitionTest *>(config_etcd_client->GetPartition(uuid)));
     }
 
-    int GetConfigEtcdPartitionInstanceId(string &uuid)
+    int GetConfigK8sPartitionInstanceId(string &uuid)
     {
-        ConfigEtcdClientTest *config_etcd_client =
-            dynamic_cast<ConfigEtcdClientTest *>(
+        ConfigK8sClientTest *config_etcd_client =
+            dynamic_cast<ConfigK8sClientTest *>(
                 config_client_manager_.get()->config_db_client());
         return (config_etcd_client->GetPartition(uuid)->GetInstanceId());
     }
 
-    uint32_t GetConfigEtcdPartitionUUIDReadRetryCount(string uuid)
+    uint32_t GetConfigK8sPartitionUUIDReadRetryCount(string uuid)
     {
-        ConfigEtcdClientTest *config_etcd_client =
-            dynamic_cast<ConfigEtcdClientTest *>(
+        ConfigK8sClientTest *config_etcd_client =
+            dynamic_cast<ConfigK8sClientTest *>(
                 config_client_manager_.get()->config_db_client());
-        ConfigEtcdPartitionTest *config_etcd_partition =
-            dynamic_cast<ConfigEtcdPartitionTest *>(
+        ConfigK8sJsonPartitionTest *config_etcd_partition =
+            dynamic_cast<ConfigK8sJsonPartitionTest *>(
                 config_etcd_client->GetPartition(uuid));
         return (config_etcd_partition->GetUUIDReadRetryCount(uuid));
     }
 
     void SetUUIDRetryTimeInMSec(string uuid, int time)
     {
-        ConfigEtcdClientTest *config_etcd_client =
-            dynamic_cast<ConfigEtcdClientTest *>(
+        ConfigK8sClientTest *config_etcd_client =
+            dynamic_cast<ConfigK8sClientTest *>(
                 config_client_manager_.get()->config_db_client());
-        ConfigEtcdPartitionTest *config_etcd_partition =
-            dynamic_cast<ConfigEtcdPartitionTest *>(
+        ConfigK8sJsonPartitionTest *config_etcd_partition =
+            dynamic_cast<ConfigK8sJsonPartitionTest *>(
                 config_etcd_client->GetPartition(uuid));
         config_etcd_partition->SetRetryTimeInMSec(time);
     }
@@ -410,11 +410,11 @@ protected:
     boost::scoped_ptr<IFMapServer> ifmap_server_;
     boost::scoped_ptr<ConfigClientManagerMock> config_client_manager_;
     boost::scoped_ptr<IFMapSandeshContext> ifmap_sandesh_context_;
-    ConfigEtcdClientTest *config_etcd_client_;
+    ConfigK8sClientTest *config_k8s_client_;
     bool validate_done_;
 };
 
-TEST_F(ConfigEtcdJsonParserTest, BulkSync)
+TEST_F(ConfigK8sJsonParserTest, BulkSync)
 {
     if (getenv("CONFIG_JSON_PARSER_TEST_DATA_FILE"))
     {
@@ -438,7 +438,7 @@ TEST_F(ConfigEtcdJsonParserTest, BulkSync)
 }
 
 // In a single message, adds vn1, vn2, vn3.
-TEST_F(ConfigEtcdJsonParserTest, ServerParserAddInOneShot)
+TEST_F(ConfigK8sJsonParserTest, ServerParserAddInOneShot)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
     FeedEventsJson();
@@ -455,7 +455,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParserAddInOneShot)
 }
 
 // Verify introspect for Object cache
-TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache)
+TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
     FeedEventsJson();
@@ -476,7 +476,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache)
     string next_batch;
     validate_done_ = false;
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponse, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponse, this,
         _1, obj_cache_expected_entries, next_batch));
     ConfigDBUUIDCacheReq *req = new ConfigDBUUIDCacheReq;
     req->HandleRequest();
@@ -485,7 +485,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache)
 }
 
 // Verify introspect for Object cache - Specific valid UUID
-TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_SpecificUUID)
+TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_SpecificUUID)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
     FeedEventsJson();
@@ -506,7 +506,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_SpecificUUID)
     string next_batch;
     validate_done_ = false;
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponse, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponse, this,
         _1, obj_cache_expected_entries, next_batch));
     ConfigDBUUIDCacheReq *req = new ConfigDBUUIDCacheReq;
     req->set_search_string("3ef-4e81");
@@ -516,7 +516,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_SpecificUUID)
 }
 
 // Verify introspect for Object cache - Specific UUID (invalid)
-TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_InvalidUUID)
+TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_InvalidUUID)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
     FeedEventsJson();
@@ -536,7 +536,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_InvalidUUID)
     string next_batch;
     vector<string> obj_cache_expected_entries;
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponse, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponse, this,
         _1, obj_cache_expected_entries, next_batch));
     ConfigDBUUIDCacheReq *req = new ConfigDBUUIDCacheReq;
     req->set_search_string("deadbeef-dead-beef");
@@ -546,7 +546,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_InvalidUUID)
 }
 
 // Verify introspect for Object cache - Request iterate
-TEST_F(ConfigEtcdJsonParserTest,
+TEST_F(ConfigK8sJsonParserTest,
        IntrospectVerify_ObjectCache_ReqIterate_uuid_srch)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
@@ -569,7 +569,7 @@ TEST_F(ConfigEtcdJsonParserTest,
     string next_batch;
 
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponse, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponse, this,
         _1, obj_cache_expected_entries, next_batch));
     ConfigDBUUIDCacheReqIterate *req = new ConfigDBUUIDCacheReqIterate;
     req->set_uuid_info("ae160-d3||634ae160-d3ef-4e81-b58d-d196211eb4d9");
@@ -578,7 +578,7 @@ TEST_F(ConfigEtcdJsonParserTest,
     TASK_UTIL_EXPECT_TRUE(validate_done_);
 }
 
-TEST_F(ConfigEtcdJsonParserTest,
+TEST_F(ConfigK8sJsonParserTest,
        IntrospectVerify_ObjectCache_ReqIterate_obj_type_srch)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
@@ -601,7 +601,7 @@ TEST_F(ConfigEtcdJsonParserTest,
     string next_batch;
 
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponse, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponse, this,
         _1, obj_cache_expected_entries, next_batch));
     ConfigDBUUIDCacheReqIterate *req = new ConfigDBUUIDCacheReqIterate;
     req->set_uuid_info("virtual_network||634ae160-d3ef-4e81-b58d-d196211eb4d9");
@@ -610,7 +610,7 @@ TEST_F(ConfigEtcdJsonParserTest,
     TASK_UTIL_EXPECT_TRUE(validate_done_);
 }
 
-TEST_F(ConfigEtcdJsonParserTest,
+TEST_F(ConfigK8sJsonParserTest,
        IntrospectVerify_ObjectCache_ReqIterate_fq_name_srch)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
@@ -633,7 +633,7 @@ TEST_F(ConfigEtcdJsonParserTest,
     string next_batch;
 
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponse, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponse, this,
         _1, obj_cache_expected_entries, next_batch));
     ConfigDBUUIDCacheReqIterate *req = new ConfigDBUUIDCacheReqIterate;
     req->set_uuid_info("vn||634ae160-d3ef-4e81-b58d-d196211eb4d9");
@@ -644,7 +644,7 @@ TEST_F(ConfigEtcdJsonParserTest,
 
 // Verify introspect for Object cache - Request iterate with deleted object
 // upper_bound should return rest of the UUID in the list
-TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_ReqIterate_Deleted)
+TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_ReqIterate_Deleted)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
     FeedEventsJson();
@@ -666,7 +666,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_ReqIterate_Deleted
     string next_batch = "634ae160||634ae160-d3ef-4e82-b58d-d196211eb4da";
 
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponse, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponse, this,
         _1, obj_cache_expected_entries, next_batch));
     ConfigDBUUIDCacheReqIterate *req = new ConfigDBUUIDCacheReqIterate;
     req->set_uuid_info("634ae160||000000-0000-0000-0000-000000000001");
@@ -677,7 +677,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_ReqIterate_Deleted
 
 // Verify introspect for Object cache field (ref, parent, prop) deleted
 // from cache.
-TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
+TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -703,7 +703,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
     vector<string> obj_cache_expected_entries =
         list_of("global_system_config")("8c5eeb87-0b08-4b0c-b53f-0a036805575c")("virtual_machine_refs")("id_perms");
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponseFieldAdded, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldAdded, this,
         _1, obj_cache_expected_entries, next_batch));
     req = new ConfigDBUUIDCacheReq;
     req->set_search_string("8c5eeb87-0b08-4724-b53f-0a0368055374");
@@ -718,7 +718,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
     vector<string> obj_cache_not_expected_entries =
         list_of("parent_type")("global_system_config")("8c5eeb87-0b08-4b0c-b53f-0a036805575c");
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
         _1, obj_cache_not_expected_entries, next_batch));
     req = new ConfigDBUUIDCacheReq;
     req->set_search_string("8c5eeb87-0b08-4724-b53f-0a0368055374");
@@ -733,7 +733,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
     vector<string> obj_cache_not_expected_entries_1 =
         list_of("virtual_machine_refs")("8c5eeb87-0b08-4725-b53f-0a0368055375");
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
         _1, obj_cache_not_expected_entries_1, next_batch));
     req = new ConfigDBUUIDCacheReq;
     req->set_search_string("8c5eeb87-0b08-4724-b53f-0a0368055374");
@@ -748,7 +748,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
     vector<string> obj_cache_not_expected_entries_2 =
         list_of("id_perms");
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
         _1, obj_cache_not_expected_entries_2, next_batch));
     req = new ConfigDBUUIDCacheReq;
     req->set_search_string("8c5eeb87-0b08-4724-b53f-0a0368055374");
@@ -758,7 +758,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
 }
 
 // Verify introspect for Object cache field (propm, propl) deleted from cache
-TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Propm_PropL_Deleted)
+TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_Propm_PropL_Deleted)
 {
     ConfigDBUUIDCacheReq *req;
     string next_batch;
@@ -782,7 +782,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Propm_PropL_Delete
     vector<string> obj_cache_expected_entries =
         list_of("virtual_machine_interface_bindings")("host_id")("vif_type")("virtual_machine_interface_fat_flow_protocols")("TCP")("UDP");
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponseFieldAdded, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldAdded, this,
         _1, obj_cache_expected_entries, next_batch));
     req = new ConfigDBUUIDCacheReq;
     req->set_search_string("c4287577-b6af-4cca-a21d-6470a08af68a");
@@ -798,7 +798,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Propm_PropL_Delete
         list_of("vif_type")(
             "UDP");
     Sandesh::set_response_callback(boost::bind(
-        &ConfigEtcdJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
+        &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
         _1, obj_cache_not_expected_entries, next_batch));
     req = new ConfigDBUUIDCacheReq;
     req->set_search_string("c4287577-b6af-4cca-a21d-6470a08af68a");
@@ -814,7 +814,7 @@ TEST_F(ConfigEtcdJsonParserTest, IntrospectVerify_ObjectCache_Propm_PropL_Delete
 }
 
 // In a multiple messages, adds (vn1, vn2), and vn3.
-TEST_F(ConfigEtcdJsonParserTest, ServerParserAddInMultipleShots)
+TEST_F(ConfigK8sJsonParserTest, ServerParserAddInMultipleShots)
 {
     ParseEventsJson(
         "controller/src/ifmap/testdata/etcd_server_parser_test01.1.json");
@@ -838,7 +838,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParserAddInMultipleShots)
 
 // In a single message, adds vn1, vn2, vn3, then deletes, vn3, then adds vn4,
 // vn5, then deletes vn5, vn4 and vn2. Only vn1 should remain.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser)
+TEST_F(ConfigK8sJsonParserTest, ServerParser)
 {
     ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test.json");
     FeedEventsJson();
@@ -859,7 +859,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser)
 // vn5, 4) deletes vn5, vn4 and vn2. Only vn1 should remain.
 // Same as ServerParser except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParserInParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParserInParts)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
@@ -899,7 +899,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParserInParts)
 }
 
 // In a single message, adds vn1, vn2, vn3 and then deletes all of them.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser1)
+TEST_F(ConfigK8sJsonParserTest, ServerParser1)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
@@ -914,7 +914,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser1)
 // In 2 separate messages, adds vn1, vn2, vn3 and then deletes all of them.
 // Same as ServerParser1 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser1InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser1InParts)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
@@ -940,7 +940,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser1InParts)
 
 // In a single message, adds vn1, vn2, vn3 in separate updateResult stanza's
 // and then adds them again in a single stanza
-TEST_F(ConfigEtcdJsonParserTest, ServerParser2)
+TEST_F(ConfigK8sJsonParserTest, ServerParser2)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
@@ -960,7 +960,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser2)
 // them again in a single stanza
 // Same as ServerParser2 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser2InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser2InParts)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
@@ -994,7 +994,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser2InParts)
 
 // In a single message, deletes vn1, vn2, vn3 in a deleteResult stanza and then
 // deletes them again in a single stanza
-TEST_F(ConfigEtcdJsonParserTest, ServerParser3)
+TEST_F(ConfigK8sJsonParserTest, ServerParser3)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
     TASK_UTIL_EXPECT_EQ(0, table->Size());
@@ -1011,7 +1011,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser3)
 // In 2 separate messages, 1) deletes vn1, vn2, vn3 2) deletes them again
 // Same as ServerParser3 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser3InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser3InParts)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
     TASK_UTIL_EXPECT_EQ(0, table->Size());
@@ -1037,7 +1037,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser3InParts)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties
 // 2) delete link(vr,vm)
 // Both vr and vm nodes should continue to live
-TEST_F(ConfigEtcdJsonParserTest, ServerParser4)
+TEST_F(ConfigK8sJsonParserTest, ServerParser4)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1065,7 +1065,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser4)
 // 2) delete link(vr,vm)
 // Same as ServerParser4 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser4InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser4InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1106,7 +1106,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser4InParts)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties
 // 2) delete vr, then link(vr,vm)
 // The vr should disappear and vm should continue to live
-TEST_F(ConfigEtcdJsonParserTest, ServerParser6)
+TEST_F(ConfigK8sJsonParserTest, ServerParser6)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1129,7 +1129,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser6)
 // The vr should disappear and vm should continue to live
 // Same as ServerParser6 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser6InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser6InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1166,7 +1166,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser6InParts)
 // 2) delete vr, then link(vr,vm)
 // 3) add vr-with-properties
 // Both vr and vm nodes should continue to live
-TEST_F(ConfigEtcdJsonParserTest, ServerParser7)
+TEST_F(ConfigK8sJsonParserTest, ServerParser7)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1194,7 +1194,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser7)
 // Both vr and vm nodes should continue to live
 // Same as ServerParser7 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser7InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser7InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1248,7 +1248,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser7InParts)
 // 2) delete link(vr,vm)
 // 3) add link(vr,vm)
 // Both vr and vm nodes should continue to live
-TEST_F(ConfigEtcdJsonParserTest, ServerParser9)
+TEST_F(ConfigK8sJsonParserTest, ServerParser9)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1277,7 +1277,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser9)
 // Both vr and vm nodes should continue to live
 // Same as ServerParser9 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser9InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser9InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1334,7 +1334,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser9InParts)
 // 2) delete link(vr,vm), then delete vr
 // The vr should disappear and vm should continue to live
 // Similar to ServerParser6, except that in step2, we delete link and then vr
-TEST_F(ConfigEtcdJsonParserTest, ServerParser10)
+TEST_F(ConfigK8sJsonParserTest, ServerParser10)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1358,7 +1358,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser10)
 // Similar to ServerParser6, except that in step2, we delete link and then vr
 // Same as ServerParser10 except that the various operations are happening in
 // separate messages.
-TEST_F(ConfigEtcdJsonParserTest, ServerParser10InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser10InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1394,7 +1394,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser10InParts)
 // 2) delete link(vr,vm), then delete vr
 // 3) add link(vr,vm)
 // vm nodes should continue to live but not vr
-TEST_F(ConfigEtcdJsonParserTest, ServerParser11)
+TEST_F(ConfigK8sJsonParserTest, ServerParser11)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1416,7 +1416,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser11)
 // 2) delete link(vr,vm), then delete vr
 // 3) add link(vr,vm)
 // vm nodes should continue to live but not vr
-TEST_F(ConfigEtcdJsonParserTest, ServerParser11InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser11InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1462,7 +1462,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser11InParts)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete link(vr,vm), then link(vr,gsc)
-TEST_F(ConfigEtcdJsonParserTest, DISABLED_ServerParser13)
+TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser13)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1498,7 +1498,7 @@ TEST_F(ConfigEtcdJsonParserTest, DISABLED_ServerParser13)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete gsc, then link(vr,gsc)
-TEST_F(ConfigEtcdJsonParserTest, DISABLED_ServerParser14)
+TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser14)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1530,7 +1530,7 @@ TEST_F(ConfigEtcdJsonParserTest, DISABLED_ServerParser14)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete gsc, then link(vr,gsc)
-TEST_F(ConfigEtcdJsonParserTest, DISABLED_ServerParser14InParts)
+TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser14InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1601,7 +1601,7 @@ TEST_F(ConfigEtcdJsonParserTest, DISABLED_ServerParser14InParts)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete vr
-TEST_F(ConfigEtcdJsonParserTest, ServerParser15)
+TEST_F(ConfigK8sJsonParserTest, ServerParser15)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1631,7 +1631,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser15)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete link(vr,gsc), then delete gsc, then delete vr
-TEST_F(ConfigEtcdJsonParserTest, ServerParser16)
+TEST_F(ConfigK8sJsonParserTest, ServerParser16)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1658,7 +1658,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser16)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete link(vr,gsc), then delete gsc, then delete vr
-TEST_F(ConfigEtcdJsonParserTest, ServerParser16InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser16InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1728,7 +1728,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser16InParts)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete link(vr,gsc), then delete gsc, then delete vr
-TEST_F(ConfigEtcdJsonParserTest, ServerParser17InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser17InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1745,16 +1745,16 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser17InParts)
     string value = GetJsonValue(uuid);
     SetUUIDRetryTimeInMSec(uuid, 100);
     task_util::TaskFire(boost::bind(
-                            &ConfigEtcdPartitionTest::FireUUIDReadRetryTimer,
-                            GetConfigEtcdPartition(uuid), uuid, value),
+                            &ConfigK8sJsonPartitionTest::FireUUIDReadRetryTimer,
+                            GetConfigK8sPartition(uuid), uuid, value),
                         "etcd::Reader",
-                        GetConfigEtcdPartitionInstanceId(uuid));
+                        GetConfigK8sPartitionInstanceId(uuid));
     task_util::WaitForIdle();
-    TASK_UTIL_EXPECT_EQ(1, GetConfigEtcdPartitionUUIDReadRetryCount(uuid));
+    TASK_UTIL_EXPECT_EQ(1, GetConfigK8sPartitionUUIDReadRetryCount(uuid));
     FeedEventsJson();
     FeedEventsJson();
     task_util::WaitForIdle();
-    TASK_UTIL_EXPECT_EQ(0, GetConfigEtcdPartitionUUIDReadRetryCount(uuid));
+    TASK_UTIL_EXPECT_EQ(0, GetConfigK8sPartitionUUIDReadRetryCount(uuid));
     TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "gsc:vr1") != NULL);
     TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "gsc:vr1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
 
@@ -1792,7 +1792,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser17InParts)
 }
 
 // Verify out of order delete sequence for ref and parent
-TEST_F(ConfigEtcdJsonParserTest, ServerParser18InParts)
+TEST_F(ConfigK8sJsonParserTest, ServerParser18InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1836,7 +1836,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParser18InParts)
 }
 
 // Verify that Draft objects are ignored
-TEST_F(ConfigEtcdJsonParserTest, ServerParserDraftObject)
+TEST_F(ConfigK8sJsonParserTest, ServerParserDraftObject)
 {
     IFMapTable *pmtable = IFMapTable::FindTable(&db_, "policy-management");
     TASK_UTIL_EXPECT_EQ(0, pmtable->Size());
@@ -1905,7 +1905,7 @@ TEST_F(ConfigEtcdJsonParserTest, ServerParserDraftObject)
 // 2. Delete the VM object
 // 3. Update the VM object without type field
 //
-TEST_F(ConfigEtcdJsonParserTest, MissingTypeField)
+TEST_F(ConfigK8sJsonParserTest, MissingTypeField)
 {
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
@@ -1929,7 +1929,7 @@ TEST_F(ConfigEtcdJsonParserTest, MissingTypeField)
 // 2. Update the VM object without fq-name field
 // 3. Delete the VM object
 //
-TEST_F(ConfigEtcdJsonParserTest, MissingFQNameField)
+TEST_F(ConfigK8sJsonParserTest, MissingFQNameField)
 {
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
@@ -1962,9 +1962,9 @@ int main(int argc, char **argv)
     LoggingInit();
     ControlNode::SetDefaultSchedulingPolicy();
     ConfigFactory::Register<ConfigK8sClient>(
-        boost::factory<ConfigEtcdClientTest *>());
+        boost::factory<ConfigK8sClientTest *>());
     ConfigFactory::Register<ConfigK8sPartition>(
-        boost::factory<ConfigEtcdPartitionTest *>());
+        boost::factory<ConfigK8sJsonPartitionTest *>());
     ConfigFactory::Register<etcd::etcdql::EtcdIf>(
         boost::factory<EqlIfTest *>());
     ConfigFactory::Register<ConfigJsonParserBase>(
