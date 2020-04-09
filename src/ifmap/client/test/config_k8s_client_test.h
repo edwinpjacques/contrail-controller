@@ -115,14 +115,14 @@ public:
     }
 };
 
-class ConfigEtcdClientTest : public ConfigEtcdClient {
+class ConfigEtcdClientTest : public ConfigK8sClient {
 public:
     ConfigEtcdClientTest(
              ConfigClientManager *mgr,
              EventManager *evm,
              const ConfigClientOptions &options,
              int num_workers) :
-                   ConfigEtcdClient(mgr,
+                   ConfigK8sClient(mgr,
                                     evm,
                                     options,
                                     num_workers),
@@ -197,7 +197,7 @@ public:
                    (resp.action() <= (WatchAction(2))));
             resp.set_key(uuid_str);
             resp.set_val(value_str);
-            ConfigEtcdClient::ProcessResponse(resp);
+            ConfigK8sClient::ProcessResponse(resp);
             itr++;
         }
         task_util::WaitForIdle();
