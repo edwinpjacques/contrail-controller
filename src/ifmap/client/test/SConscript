@@ -26,9 +26,9 @@ env.Append(LIBPATH = env['TOP'] + '/xml')
 env.Append(LIBPATH = env['TOP'] + '/xmpp')
 env.Append(LIBPATH = env['TOP'] + '/schema')
 
-etcd_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
+k8s_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
 
-if etcd_incl:
+if k8s_incl:
     env.Prepend(LIBS = [
                     'etcdql', 'protobuf', 'grpc++', 'grpc', 'z'
                    ])
@@ -55,14 +55,14 @@ config_json_parser_test = env.UnitTest('config_json_parser_test',
                                        ['config_json_parser_test.cc'])
 env.Alias('src/ifmap/client:config_json_parser_test', config_json_parser_test)
 
-if etcd_incl:
-    config_etcd_json_parser_test = env.UnitTest('config_etcd_json_parser_test',
-                                             ['config_etcd_json_parser_test.cc'])
-    env.Alias('src/ifmap/client:config_etcd_json_parser_test', 
-                                             config_etcd_json_parser_test)
+if k8s_incl:
+    config_k8s_json_parser_test = env.UnitTest('config_k8s_json_parser_test',
+                                             ['config_k8s_json_parser_test.cc'])
+    env.Alias('src/ifmap/client:config_k8s_json_parser_test', 
+                                             config_k8s_json_parser_test)
 
     client_unit_tests = [config_json_parser_test,
-                         config_etcd_json_parser_test]
+                         config_k8s_json_parser_test]
 else:
     client_unit_tests = [config_json_parser_test]
 
