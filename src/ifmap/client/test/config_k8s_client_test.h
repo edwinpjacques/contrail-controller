@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2018 Juniper Networks, Inc. All rights reserved.
  */
-#ifndef ctrlplane_config_etcd_client_test_h
-#define ctrlplane_config_etcd_client_test_h
+#ifndef ctrlplane_config_k8s_client_test_h
+#define ctrlplane_config_k8s_client_test_h
 
 #include <boost/foreach.hpp>
 #include <fstream>
@@ -115,9 +115,9 @@ public:
     }
 };
 
-class ConfigEtcdClientTest : public ConfigK8sClient {
+class ConfigK8sClientTest : public ConfigK8sClient {
 public:
-    ConfigEtcdClientTest(
+    ConfigK8sClientTest(
              ConfigClientManager *mgr,
              EventManager *evm,
              const ConfigClientOptions &options,
