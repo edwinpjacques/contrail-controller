@@ -13,7 +13,7 @@
 #include <vector>
 #include "config-client-mgr/config_cass2json_adapter.h"
 #include "config-client-mgr/config_client_manager.h"
-#include "config-client-mgr/config_etcd_client.h"
+#include "config-client-mgr/config_k8s_client.h"
 #include "config-client-mgr/config_factory.h"
 #include "database/etcd/eql_if.h"
 #include "ifmap/client/config_json_parser.h"
