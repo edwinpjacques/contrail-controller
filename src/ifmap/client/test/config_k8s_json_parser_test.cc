@@ -423,7 +423,7 @@ TEST_F(ConfigK8sJsonParserTest, BulkSync)
     }
     else
     {
-        ParseDatabase("controller/src/ifmap/client/testdata/bulk_sync_etcd.json");
+        ParseDatabase("controller/src/ifmap/client/testdata/bulk_sync_k8s.json");
     }
     config_client_manager_->Initialize();
     task_util::WaitForIdle();
@@ -440,7 +440,7 @@ TEST_F(ConfigK8sJsonParserTest, BulkSync)
 // In a single message, adds vn1, vn2, vn3.
 TEST_F(ConfigK8sJsonParserTest, ServerParserAddInOneShot)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -457,7 +457,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParserAddInOneShot)
 // Verify introspect for Object cache
 TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -487,7 +487,7 @@ TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache)
 // Verify introspect for Object cache - Specific valid UUID
 TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_SpecificUUID)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -518,7 +518,7 @@ TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_SpecificUUID)
 // Verify introspect for Object cache - Specific UUID (invalid)
 TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_InvalidUUID)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -549,7 +549,7 @@ TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_InvalidUUID)
 TEST_F(ConfigK8sJsonParserTest,
        IntrospectVerify_ObjectCache_ReqIterate_uuid_srch)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -581,7 +581,7 @@ TEST_F(ConfigK8sJsonParserTest,
 TEST_F(ConfigK8sJsonParserTest,
        IntrospectVerify_ObjectCache_ReqIterate_obj_type_srch)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -613,7 +613,7 @@ TEST_F(ConfigK8sJsonParserTest,
 TEST_F(ConfigK8sJsonParserTest,
        IntrospectVerify_ObjectCache_ReqIterate_fq_name_srch)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -646,7 +646,7 @@ TEST_F(ConfigK8sJsonParserTest,
 // upper_bound should return rest of the UUID in the list
 TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_ReqIterate_Deleted)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test01.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test01.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -689,7 +689,7 @@ TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
     string next_batch;
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test16_p4.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test16_p4.json");
     // feed vm1,vr1,gsc1 and vr1 ref vm1, vr1 parent is gsc1
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
@@ -770,7 +770,7 @@ TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_Propm_PropL_Deleted
                                                  "virtual-machine-interface");
     TASK_UTIL_EXPECT_EQ(0, vmitable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_vmi_list_map_prop_p1.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_vmi_list_map_prop_p1.json");
     // feed domain, project vmi
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, domaintable->Size());
@@ -817,7 +817,7 @@ TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_Propm_PropL_Deleted
 TEST_F(ConfigK8sJsonParserTest, ServerParserAddInMultipleShots)
 {
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test01.1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test01.1.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -840,7 +840,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParserAddInMultipleShots)
 // vn5, then deletes vn5, vn4 and vn2. Only vn1 should remain.
 TEST_F(ConfigK8sJsonParserTest, ServerParser)
 {
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test.json");
     FeedEventsJson();
 
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
@@ -863,7 +863,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParserInParts)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test_p1.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(3, table->Size());
 
@@ -903,7 +903,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser1)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test1.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(0, table->Size());
     TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-network", "vn1") == NULL);
@@ -919,7 +919,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser1InParts)
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test1_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test1_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(3, table->Size());
 
@@ -944,7 +944,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser2)
 {
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test2.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test2.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(3, table->Size());
 
@@ -965,7 +965,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser2InParts)
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test2_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test2_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, table->Size());
 
@@ -999,7 +999,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser3)
     IFMapTable *table = IFMapTable::FindTable(&db_, "virtual-network");
     TASK_UTIL_EXPECT_EQ(0, table->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test3.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test3.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(0, table->Size());
 
@@ -1017,7 +1017,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser3InParts)
     TASK_UTIL_EXPECT_EQ(0, table->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test3_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test3_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(0, table->Size());
 
@@ -1044,7 +1044,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser4)
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test4.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test4.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1073,7 +1073,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser4InParts)
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test4_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test4_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1113,7 +1113,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser6)
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test6.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test6.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1137,7 +1137,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser6InParts)
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test6_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test6_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1172,7 +1172,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser7)
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test7.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test7.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1202,7 +1202,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser7InParts)
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test7_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test7_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1255,7 +1255,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser9)
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test9.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test9.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1285,7 +1285,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser9InParts)
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test9_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test9_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1341,7 +1341,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser10)
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test10.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test10.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1366,7 +1366,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser10InParts)
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test10_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test10_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1401,7 +1401,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser11)
     IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test11.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test11.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1424,7 +1424,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser11InParts)
     TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test11_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test11_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1471,7 +1471,7 @@ TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser13)
     IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
     TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test13.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test13.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1507,7 +1507,7 @@ TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser14)
     IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
     TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test14.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test14.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1541,7 +1541,7 @@ TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser14InParts)
 
     // Using datafile from test13_p1
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test14_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test14_p1.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1610,7 +1610,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser15)
     IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
     TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test15.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test15.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1640,7 +1640,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser16)
     IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
     TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
 
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test16.json");
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test16.json");
     FeedEventsJson();
     task_util::WaitForIdle();
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
@@ -1669,7 +1669,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser16InParts)
 
     // Using datafile from test13_p1
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test16_p1.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test16_p1.json");
     FeedEventsJson();
     FeedEventsJson();
     FeedEventsJson();
@@ -1738,7 +1738,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser17InParts)
     TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test16_p2.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test16_p2.json");
     FeedEventsJson();
     task_util::WaitForIdle();
     string uuid = "/UPDATE/virtual_router/8c5eeb87-0b08-4724-b53f-0a0368055374";
@@ -1791,6 +1791,63 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser17InParts)
     TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") == NULL);
 }
 
+// Validate the handling of object without type field
+// Steps:
+// 1. Add the VM object
+// 2. Delete the VM object
+// 3. Update the VM object without type field
+//
+TEST_F(ConfigK8sJsonParserTest, MissingTypeField)
+{
+    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
+    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
+
+    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test17.json");
+    FeedEventsJson();
+    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
+
+    // Delete the VM entry and send VM entry update with missing type field
+    FeedEventsJson();
+
+    // Verify that VM object is gone
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
+}
+
+// Validate the handling of object without fq-name field
+// Steps:
+// 1. Add the VM object
+// 2. Update the VM object without fq-name field
+// 3. Delete the VM object
+//
+TEST_F(ConfigK8sJsonParserTest, MissingFQNameField)
+{
+    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
+    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
+
+    ParseEventsJson(
+        "controller/src/ifmap/testdata/k8s_server_parser_test17_1.json");
+    FeedEventsJson();
+    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
+
+    // Update the VM entry with missing fq-name field
+    FeedEventsJson();
+
+    // Verify that VM object is gone
+    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
+
+    // Delete the VM entry
+    FeedEventsJson();
+
+    // Verify that delete of VM object which was assumed to be deleted is
+    // handled well!!
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
+}
+
 // Verify out of order delete sequence for ref and parent
 TEST_F(ConfigK8sJsonParserTest, ServerParser18InParts)
 {
@@ -1802,7 +1859,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser18InParts)
     TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test18.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test18.json");
     FeedEventsJson();
     TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
     TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
@@ -1844,7 +1901,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParserDraftObject)
     TASK_UTIL_EXPECT_EQ(0, frtable->Size());
 
     ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test19.json");
+        "controller/src/ifmap/testdata/k8s_server_parser_test19.json");
     // Create the firewall-rule draft object with draft-mode-state 'created',
     //  draft-policy-management and normal-policy-management objects.
     FeedEventsJson();
@@ -1897,63 +1954,6 @@ TEST_F(ConfigK8sJsonParserTest, ServerParserDraftObject)
         NodeLookup("firewall-rule",
                    "normal-policy-management:3438e2fa-bfcd-4745-bd58-52713ae27ac4") ==
         NULL);
-}
-
-// Validate the handling of object without type field
-// Steps:
-// 1. Add the VM object
-// 2. Delete the VM object
-// 3. Update the VM object without type field
-//
-TEST_F(ConfigK8sJsonParserTest, MissingTypeField)
-{
-    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-
-    ParseEventsJson("controller/src/ifmap/testdata/etcd_server_parser_test17.json");
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    // Delete the VM entry and send VM entry update with missing type field
-    FeedEventsJson();
-
-    // Verify that VM object is gone
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
-}
-
-// Validate the handling of object without fq-name field
-// Steps:
-// 1. Add the VM object
-// 2. Update the VM object without fq-name field
-// 3. Delete the VM object
-//
-TEST_F(ConfigK8sJsonParserTest, MissingFQNameField)
-{
-    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-
-    ParseEventsJson(
-        "controller/src/ifmap/testdata/etcd_server_parser_test17_1.json");
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    // Update the VM entry with missing fq-name field
-    FeedEventsJson();
-
-    // Verify that VM object is gone
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
-
-    // Delete the VM entry
-    FeedEventsJson();
-
-    // Verify that delete of VM object which was assumed to be deleted is
-    // handled well!!
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
 }
 
 int main(int argc, char **argv)
