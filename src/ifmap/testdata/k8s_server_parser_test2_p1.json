@@ -1,80 +1,77 @@
-{
-    "/CREATE/virtual_network/634ae160-d3ef-4e81-b58d-d196211eb4d9": {
-        "fq_name": [
-            "vn1"
-        ],
-        "type": "virtual_network",
-        "id_perms": {
-            "uuid": {
-                "uuid_lslong": 7154778764020240001,
-                "uuid_mslong": 13082342935312119001
-            }
-        }
+[
+  {
+    "type": "CREATE",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualNetwork",
+      "metadata": {
+        "uid": "634ae160-d3ef-4e81-b58d-d196211eb4d9"
+      }
     },
-    "/PAUSED/": {
+    "spec": {}
+  },
+  {
+    "type": "PAUSED"
+  },
+  {
+    "type": "CREATE",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualNetwork",
+      "metadata": {
+        "uid": "634ae160-d3ef-4e82-b58d-d196211eb4da"
+      }
     },
-    "/CREATE/virtual_network/634ae160-d3ef-4e82-b58d-d196211eb4da": {
-        "fq_name": [
-            "vn2"
-        ],
-        "type": "virtual_network",
-        "id_perms": {
-            "uuid": {
-                "uuid_lslong": 7154778764020240002,
-                "uuid_mslong": 13082342935312119002
-            }
-        }
+    "spec": {}
+  },
+  {
+    "type": "PAUSED"
+  },
+  {
+    "type": "CREATE",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualNetwork",
+      "metadata": {
+        "uid": "634ae160-d3ef-4e83-b58d-d196211eb4db"
+      }
     },
-    "/PAUSED/": {
+    "spec": {}
+  },
+  {
+    "type": "PAUSED"
+  },
+  {
+    "type": "UPDATE",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualNetwork",
+      "metadata": {
+        "uid": "634ae160-d3ef-4e81-b58d-d196211eb4d9"
+      }
     },
-    "/CREATE/virtual_network/634ae160-d3ef-4e83-b58d-d196211eb4db": {
-        "fq_name": [
-            "vn3"
-        ],
-        "type": "virtual_network",
-        "id_perms": {
-            "uuid": {
-                "uuid_lslong": 7154778764020240003,
-                "uuid_mslong": 13082342935312119003
-            }
-        }
+    "spec": {}
+  },
+  {
+    "type": "UPDATE",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualNetwork",
+      "metadata": {
+        "uid": "634ae160-d3ef-4e82-b58d-d196211eb4da"
+      }
     },
-    "/PAUSED/": {
+    "spec": {}
+  },
+  {
+    "type": "UPDATE",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualNetwork",
+      "metadata": {
+        "uid": "634ae160-d3ef-4e83-b58d-d196211eb4db"
+      }
     },
-    "/UPDATE/virtual_network/634ae160-d3ef-4e81-b58d-d196211eb4d9": {
-        "fq_name": [
-            "vn1"
-        ],
-        "type": "virtual_network",
-        "id_perms": {
-            "uuid": {
-                "uuid_lslong": 7154778764020240001,
-                "uuid_mslong": 13082342935312119001
-            }
-        }
-    },
-    "/UPDATE/virtual_network/634ae160-d3ef-4e82-b58d-d196211eb4da": {
-        "fq_name": [
-            "vn2"
-        ],
-        "type": "virtual_network",
-        "id_perms": {
-            "uuid": {
-                "uuid_lslong": 7154778764020240002,
-                "uuid_mslong": 13082342935312119002
-            }
-        }
-    },
-    "/UPDATE/virtual_network/634ae160-d3ef-4e83-b58d-d196211eb4db": {
-        "fq_name": [
-            "vn3"
-        ],
-        "type": "virtual_network",
-        "id_perms": {
-            "uuid": {
-                "uuid_lslong": 7154778764020240003,
-                "uuid_mslong": 13082342935312119003
-            }
-        }
-    }
-}
+    "spec": {}
+  }
+]
