@@ -1,4 +1,4 @@
-# Purpose: Filter to generate watch Kubernetes JSON data from ETCD watch JSON data.
+# Purpose: Filter to generate Kubernetes JSON data from ETCD JSON data.
 # Author:  Edwin P. Jacques (ejacques@juniper.net)
 # Copyright (c) 2020 Juniper Networks, Inc. All rights reserved.
 
