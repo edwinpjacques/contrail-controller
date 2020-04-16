@@ -24,13 +24,15 @@ def recurse_field_case:
 
 # Create key/value pairs for all fields in the spec.
 def spec_data:
-    . | (select (.parent_uuid != null) 
-      | { "parent": {
-          "apiVersion": "core.contrail.juniper.net/v1alpha1",
-          "kind": .parent_type | type_case,
-          "uuid": .parent_uuid
-          }
-        }
+    . | 
+        (
+          select (.parent_uuid != null) 
+          | { "parent": {
+                "apiVersion": "core.contrail.juniper.net/v1alpha1",
+                "kind": .parent_type | type_case,
+                "uuid": .parent_uuid
+              }
+            }
         ),
         del(.fq_name) 
       | del(.id_perms) 
@@ -40,21 +42,34 @@ def spec_data:
       | del(.parent_type)
       | del(.parent_uuid)
       | del(.parent_name)
+      | del(.event)
       | recurse_field_case;
 
 # Convert etcd database event list into a list of Kubernetes watch objects.
 def watch_etcd_to_k8s:
 [
-    to_entries[] | (.key | split("/") 
-        | {"type": .[1]} +
-        {"object": (
-            {"apiVersion": "core.contrail.juniper.net/v1alpha1"} +
-            {"kind": .[2] | type_case} +
-            {"metadata": (
-                {"uid": .[3]}
-            )}
-        )} )
-        + { "spec": .value | spec_data }
+    .[] | 
+          (
+            .event | split("/")
+            |
+              if (.[1] == "PAUSED") then
+                {"type": .[1]} 
+              else
+                {"type": .[1]} 
+                + {"object": (
+                    {"apiVersion": "core.contrail.juniper.net/v1alpha1"}
+                  + {"kind": .[2] | type_case} 
+                  + {"metadata": (
+                      {"uid": .[3]}
+                    )}
+                  )}
+              end
+            )
+              + if (.event == "/PAUSED/") then 
+                  null
+                else 
+                  { "spec": . | spec_data } 
+                end
 ];
 
 # Convert etcd database state document into a list of Kubernetes objects.
@@ -64,11 +79,11 @@ def bulk_etcd_to_k8s:
         | { "apiVersion": "core.contrail.juniper.net/v1alpha1" }
         + { "kind": .type | type_case }
         + { "metadata": {
-                "creationTimestamp": .id_perms.last_modified,
-                "generation": 1,
-                "name": .fq_name[-1],
-                "resourceVersion": 1,
-                "uuid": .uuid
+              "creationTimestamp": .id_perms.last_modified,
+              "generation": 1,
+              "name": .fq_name[-1],
+              "resourceVersion": 1,
+              "uuid": .uuid
             }
           }
         + { "spec": . | spec_data }
