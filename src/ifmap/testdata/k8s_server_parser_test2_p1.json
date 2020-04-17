@@ -1,77 +1,113 @@
 [
   {
-    "type": "CREATE",
+    "type": "ADDED",
     "object": {
       "apiVersion": "core.contrail.juniper.net/v1alpha1",
       "kind": "VirtualNetwork",
       "metadata": {
         "uid": "634ae160-d3ef-4e81-b58d-d196211eb4d9"
+      },
+      "spec": {},
+      "status": {
+        "fqName": [
+          "vn1"
+        ],
+        "state": "Success"
       }
-    },
-    "spec": {}
+    }
   },
   {
     "type": "PAUSED"
   },
   {
-    "type": "CREATE",
+    "type": "ADDED",
     "object": {
       "apiVersion": "core.contrail.juniper.net/v1alpha1",
       "kind": "VirtualNetwork",
       "metadata": {
         "uid": "634ae160-d3ef-4e82-b58d-d196211eb4da"
+      },
+      "spec": {},
+      "status": {
+        "fqName": [
+          "vn2"
+        ],
+        "state": "Success"
       }
-    },
-    "spec": {}
+    }
   },
   {
     "type": "PAUSED"
   },
   {
-    "type": "CREATE",
+    "type": "ADDED",
     "object": {
       "apiVersion": "core.contrail.juniper.net/v1alpha1",
       "kind": "VirtualNetwork",
       "metadata": {
         "uid": "634ae160-d3ef-4e83-b58d-d196211eb4db"
+      },
+      "spec": {},
+      "status": {
+        "fqName": [
+          "vn3"
+        ],
+        "state": "Success"
       }
-    },
-    "spec": {}
+    }
   },
   {
     "type": "PAUSED"
   },
   {
-    "type": "UPDATE",
+    "type": "MODIFIED",
     "object": {
       "apiVersion": "core.contrail.juniper.net/v1alpha1",
       "kind": "VirtualNetwork",
       "metadata": {
         "uid": "634ae160-d3ef-4e81-b58d-d196211eb4d9"
+      },
+      "spec": {},
+      "status": {
+        "fqName": [
+          "vn1"
+        ],
+        "state": "Success"
       }
-    },
-    "spec": {}
+    }
   },
   {
-    "type": "UPDATE",
+    "type": "MODIFIED",
     "object": {
       "apiVersion": "core.contrail.juniper.net/v1alpha1",
       "kind": "VirtualNetwork",
       "metadata": {
         "uid": "634ae160-d3ef-4e82-b58d-d196211eb4da"
+      },
+      "spec": {},
+      "status": {
+        "fqName": [
+          "vn2"
+        ],
+        "state": "Success"
       }
-    },
-    "spec": {}
+    }
   },
   {
-    "type": "UPDATE",
+    "type": "MODIFIED",
     "object": {
       "apiVersion": "core.contrail.juniper.net/v1alpha1",
       "kind": "VirtualNetwork",
       "metadata": {
         "uid": "634ae160-d3ef-4e83-b58d-d196211eb4db"
+      },
+      "spec": {},
+      "status": {
+        "fqName": [
+          "vn3"
+        ],
+        "state": "Success"
       }
-    },
-    "spec": {}
+    }
   }
 ]

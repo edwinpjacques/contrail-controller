@@ -48,7 +48,7 @@ public:
                              const string& range_end,
                              int limit) {
         EtcdResponse resp;
-        multimap<string, string> kvs;
+        EtcdResponse::kv_map kvs;
 
         if (--db_index == 0) {
             resp.set_err_code(-1);
@@ -61,21 +61,31 @@ public:
           */
         resp.set_err_code(0);
 
-        for (Value::ConstMemberIterator itr = dbDoc_.MemberBegin();
-             itr != dbDoc_.MemberEnd(); itr++) {
+        /* Bulk data is one big document with an "items" member. */
+        Value& items = dbDoc_["items"];
+
+        for (Value::ConstValueIterator itr = items.Begin();
+             itr != items.End(); itr++) {
+                 
+            Value::ConstMemberIterator metadata = itr->FindMember("metadata");
+            Value::ConstMemberIterator uuid = metadata->value.GetObject().FindMember("uid");
+            
             /**
               * Get the uuid string and the value from the
               * database Document created from the input file.
               */
-            string uuid_str = itr->name.GetString();
+            string uuid_str = uuid->value.GetString();
             StringBuffer sb;
             Writer<StringBuffer> writer(sb);
-            itr->value.Accept(writer);
+            itr->Accept(writer);
             string value_str = sb.GetString();
 
             /**
               * Populate the key-value store to be saved
-              * in the EtcdResponse.
+              * in the K8sResponse.
+              * 
+              * In theory there can be more than one entry for the same UUID,
+              * so we store the data into a multimap.
               */
             kvs.insert(pair<string, string> (uuid_str, value_str));
         }
@@ -131,18 +141,32 @@ public:
 
     Document *ev_load() { return &evDoc_; }
 
-    string GetJsonValue(const string &uuid) {
-        if (!evDoc_.HasMember(uuid.c_str())) {
-            return string();
+    string GetJsonValue(size_t index) 
+    {
+        string value_str;
+
+        // Each event is a nested document.  Skip to the next one to be read.
+        Value::Array events = evDoc_.GetArray();
+
+        // trivial case, simply return
+        if (events.Empty()) {
+            return value_str;
         }
-        Value &val = evDoc_[uuid.c_str()];
+
+        // make sure index is not out of range
+        if (events.Size() <= index) {
+            return value_str;
+        }
+
+        Value &val = events[index];
         StringBuffer sb;
         Writer<StringBuffer> writer(sb);
         val.Accept(writer);
-        string value_str = sb.GetString();
+        value_str = sb.GetString();
         return (value_str);
     }
 
+    // All the test data is an array of documents.
     void ParseEventsJson(string events_file) {
         string json_events = FileRead(events_file);
         assert(json_events.size() != 0);
@@ -164,41 +188,55 @@ public:
         EtcdResponse resp;
         resp.set_err_code(0);
 
-        Document *eventDoc = &evDoc_;
+        // Each event is a nested document.  Skip to the next one to be read.
+        Value::Array events = evDoc_.GetArray();
 
-        size_t curr = 0;
-        Value::ConstMemberIterator itr = eventDoc->MemberBegin();
-        while (curr++ < cevent_) {
-             itr++;
+        // trivial case, simply return
+        if (events.Empty()) {
+            return;
         }
 
-        while (itr != eventDoc->MemberEnd()) {
-            cevent_++;
+        while (cevent_ < events.Size())
+        {
             /**
               * Get the uuid string and the value from the
               * database Document created from the input file.
               */
-            string uuid_str = itr->name.GetString();
-            StringBuffer sb;
-            Writer<StringBuffer> writer(sb);
-            itr->value.Accept(writer);
-            string value_str = sb.GetString();
-            string action = uuid_str.substr(1, 6);
-            if (action == "CREATE") {
+            Value event = events[cevent_++].GetObject();
+            Value::MemberIterator type = event.FindMember("type");
+            string type_str = type->value.GetString();
+
+            Value::MemberIterator object = event.FindMember("object");
+            Value::MemberIterator metadata;
+            Value::MemberIterator uid;
+            string uid_str;
+
+            if (object != event.MemberEnd()) {
+                metadata = object->value.FindMember("metadata");
+                uid = metadata->value.FindMember("uid");
+                uid_str = uid->value.GetString();
+            }
+
+            if (type_str == "ADDED") {
                 resp.set_action(WatchAction(0));
-            } else if (action == "UPDATE") {
+            } else if (type_str == "MODIFIED") {
                 resp.set_action(WatchAction(1));
-            } else if (action == "DELETE") {
+            } else if (type_str == "DELETED") {
                 resp.set_action(WatchAction(2));
-            } else if (action == "PAUSED") {
+            } else if (type_str == "PAUSED") {
                 break;
             }
             assert((resp.action() >= WatchAction(0)) &&
                    (resp.action() <= (WatchAction(2))));
-            resp.set_key(uuid_str);
+            resp.set_key(uid_str);
+
+            StringBuffer sb;
+            Writer<StringBuffer> writer(sb);
+            object->value.Accept(writer);
+            string value_str = sb.GetString();
             resp.set_val(value_str);
+            
             ConfigK8sClient::ProcessResponse(resp);
-            itr++;
         }
         task_util::WaitForIdle();
     }

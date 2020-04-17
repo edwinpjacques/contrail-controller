@@ -81,8 +81,7 @@ public:
 
     void FireUUIDReadRetryTimer(string &uuid, string &value)
     {
-        string uuid_key = uuid.substr(uuid.rfind('/') + 1);
-        UUIDCacheEntry *obj = GetUUIDCacheEntry(uuid_key);
+        UUIDCacheEntry *obj = GetUUIDCacheEntry(uuid);
         if (obj)
         {
             if (obj->IsRetryTimerCreated())
@@ -245,88 +244,6 @@ protected:
         task_util::WaitForIdle();
     }
 
-    void ListMapVmiVerifyCommon(const vector<string> expected_results,
-                                int property_id, uint64_t expected_vmi_table_count)
-    {
-        IFMapTable *domaintable = IFMapTable::FindTable(&db_, "domain");
-        IFMapTable *projecttable = IFMapTable::FindTable(&db_, "project");
-        IFMapTable *vmitable =
-            IFMapTable::FindTable(&db_, "virtual-machine-interface");
-
-        TASK_UTIL_EXPECT_EQ(1, domaintable->Size());
-        TASK_UTIL_EXPECT_TRUE(NodeLookup("domain", "default-domain") != NULL);
-        TASK_UTIL_EXPECT_TRUE(NodeLookup("domain", "default-domain")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-        TASK_UTIL_EXPECT_EQ(1, projecttable->Size());
-        TASK_UTIL_EXPECT_TRUE(
-            NodeLookup("project", "default-domain:service") != NULL);
-        TASK_UTIL_EXPECT_TRUE(
-            NodeLookup("project", "default-domain:service")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-        TASK_UTIL_EXPECT_EQ(1, vmitable->Size());
-        TASK_UTIL_EXPECT_TRUE(
-            NodeLookup(
-                "virtual-machine-interface",
-                "default-domain:service:c4287577-b6af-4cca-a21d-6470a08af68a") != NULL);
-        VirtualMachineInterface *vmi =
-            reinterpret_cast<VirtualMachineInterface *>(NodeLookup(
-                                                            "virtual-machine-interface",
-                                                            "default-domain:service:"
-                                                            "c4287577-b6af-4cca-a21d-6470a08af68a")
-                                                            ->Find(
-                                                                IFMapOrigin(IFMapOrigin::CASSANDRA)));
-        TASK_UTIL_EXPECT_TRUE(vmi != NULL);
-        if (property_id == VirtualMachineInterface::BINDINGS)
-        {
-            if (vmi->IsPropertySet(VirtualMachineInterface::BINDINGS))
-            {
-                std::vector<KeyValuePair> bindings = vmi->bindings();
-                for (uint32_t i = 0; i < bindings.size(); i++)
-                {
-                    cout << "Entry: " << i << " Key: " << bindings[i].key
-                         << " Value: " << bindings[i].value;
-                    cout << endl;
-                }
-                TASK_UTIL_EXPECT_EQ(expected_results.size(), bindings.size());
-                for (size_t i = 0; i < bindings.size(); i++)
-                {
-                    string result_match = bindings[i].key + ':' + bindings[i].value;
-                    TASK_UTIL_EXPECT_EQ(expected_results[i], result_match);
-                }
-            }
-            else
-            {
-                TASK_UTIL_EXPECT_TRUE(expected_results.size() == 0);
-            }
-        }
-        else if (property_id == VirtualMachineInterface::FAT_FLOW_PROTOCOLS)
-        {
-            if (vmi->IsPropertySet(
-                    VirtualMachineInterface::FAT_FLOW_PROTOCOLS))
-            {
-                std::vector<ProtocolType> fat_flow_protocols =
-                    vmi->fat_flow_protocols();
-                for (uint32_t i = 0; i < fat_flow_protocols.size(); i++)
-                {
-                    cout << "Entry: " << i << " Protocol " << fat_flow_protocols[i].protocol << " Port: "
-                         << fat_flow_protocols[i].port;
-                    cout << endl;
-                }
-                TASK_UTIL_EXPECT_EQ(expected_results.size(),
-                                    fat_flow_protocols.size());
-                for (size_t i = 0; i < fat_flow_protocols.size(); i++)
-                {
-                    string result_match = fat_flow_protocols[i].protocol + ':' + integerToString(fat_flow_protocols[i].port);
-                    TASK_UTIL_EXPECT_EQ(expected_results[i], result_match);
-                }
-            }
-        }
-        else
-        {
-            TASK_UTIL_EXPECT_TRUE(0);
-        }
-        cout << "vmitable input count:" << vmitable->input_count() << endl;
-        TASK_UTIL_EXPECT_EQ(expected_vmi_table_count, vmitable->input_count());
-    }
-
     IFMapNode *NodeLookup(const string &type, const string &name)
     {
         return ifmap_test_util::IFMapNodeLookup(&db_, type, name);
@@ -357,9 +274,9 @@ protected:
         config_k8s_client_->FeedEventsJson();
     }
 
-    string GetJsonValue(const string &uuid)
+    string GetJsonValue(size_t index)
     {
-        string val = config_k8s_client_->GetJsonValue(uuid);
+        string val = config_k8s_client_->GetJsonValue(index);
         return val;
     }
 
@@ -431,6 +348,8 @@ TEST_F(ConfigK8sJsonParserTest, BulkSync)
     IFMapTable *vn_table = IFMapTable::FindTable(&db_,
                                                  "virtual-network");
     TASK_UTIL_EXPECT_NE(0, vn_table->Size());
+
+    // TODO: Add test for propagation of all fields (including description).
 
     if (getenv("CONFIG_JSON_PARSER_TEST_INTROSPECT"))
         TASK_UTIL_EXEC_AND_WAIT(evm_, "/usr/bin/python");
@@ -735,21 +654,6 @@ TEST_F(ConfigK8sJsonParserTest, IntrospectVerify_ObjectCache_Field_Deleted)
     Sandesh::set_response_callback(boost::bind(
         &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
         _1, obj_cache_not_expected_entries_1, next_batch));
-    req = new ConfigDBUUIDCacheReq;
-    req->set_search_string("8c5eeb87-0b08-4724-b53f-0a0368055374");
-    req->HandleRequest();
-    req->Release();
-    TASK_UTIL_EXPECT_TRUE(validate_done_);
-
-    // feed vr1 update, without id_perms
-    FeedEventsJson();
-    validate_done_ = false;
-    ifmap_sandesh_context_->set_page_limit(2);
-    vector<string> obj_cache_not_expected_entries_2 =
-        list_of("id_perms");
-    Sandesh::set_response_callback(boost::bind(
-        &ConfigK8sJsonParserTest::ValidateObjCacheResponseFieldRemoved, this,
-        _1, obj_cache_not_expected_entries_2, next_batch));
     req = new ConfigDBUUIDCacheReq;
     req->set_search_string("8c5eeb87-0b08-4724-b53f-0a0368055374");
     req->HandleRequest();
@@ -1461,145 +1365,6 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser11InParts)
 // In a single message:
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
-// 3) delete link(vr,vm), then link(vr,gsc)
-TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser13)
-{
-    IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
-    TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
-    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test13.json");
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-    TASK_UTIL_EXPECT_EQ(1, gsctable->Size());
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "vr1"),
-                              NodeLookup("virtual-machine", "vm1"),
-                              "virtual-router-virtual-machine") == NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "vr1"),
-                              NodeLookup("global-system-config", "gsc"),
-                              "global-system-config-virtual-router") == NULL);
-}
-
-// In a single message:
-// 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
-// 2) create link(vr,gsc), then gsc-with-properties
-// 3) delete gsc, then link(vr,gsc)
-TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser14)
-{
-    IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
-    TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
-    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    ParseEventsJson("controller/src/ifmap/testdata/k8s_server_parser_test14.json");
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") == NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "vr1"),
-                              NodeLookup("virtual-machine", "vm1"),
-                              "virtual-router-virtual-machine") != NULL);
-}
-
-// In 3 separate messages:
-// 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
-// 2) create link(vr,gsc), then gsc-with-properties
-// 3) delete gsc, then link(vr,gsc)
-TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser14InParts)
-{
-    IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
-    TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
-    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    // Using datafile from test13_p1
-    ParseEventsJson(
-        "controller/src/ifmap/testdata/k8s_server_parser_test14_p1.json");
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") == NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "vr1"),
-                              NodeLookup("virtual-machine", "vm1"),
-                              "virtual-router-virtual-machine") != NULL);
-
-    // Using datafile from test13_p2
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(1, gsctable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "vr1"),
-                              NodeLookup("virtual-machine", "vm1"),
-                              "virtual-router-virtual-machine") != NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "vr1"),
-                              NodeLookup("global-system-config", "gsc"),
-                              "global-system-config-virtual-router") != NULL);
-
-    // Need new datafile for step 3
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "vr1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") == NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "vr1"),
-                              NodeLookup("virtual-machine", "vm1"),
-                              "virtual-router-virtual-machine") != NULL);
-}
-
-// In a single message:
-// 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
-// 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete vr
 TEST_F(ConfigK8sJsonParserTest, ServerParser15)
 {
@@ -1728,7 +1493,7 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser16InParts)
 // 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
 // 2) create link(vr,gsc), then gsc-with-properties
 // 3) delete link(vr,gsc), then delete gsc, then delete vr
-TEST_F(ConfigK8sJsonParserTest, ServerParser17InParts)
+TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser17InParts)
 {
     IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
     TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
@@ -1741,13 +1506,14 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser17InParts)
         "controller/src/ifmap/testdata/k8s_server_parser_test16_p2.json");
     FeedEventsJson();
     task_util::WaitForIdle();
-    string uuid = "/UPDATE/virtual_router/8c5eeb87-0b08-4724-b53f-0a0368055374";
-    string value = GetJsonValue(uuid);
+    string uuid = "8c5eeb87-0b08-4724-b53f-0a0368055374";
+    // reference the "modified" event for the (above) uuid
+    string value = GetJsonValue(1);
     SetUUIDRetryTimeInMSec(uuid, 100);
     task_util::TaskFire(boost::bind(
                             &ConfigK8sJsonPartitionTest::FireUUIDReadRetryTimer,
                             GetConfigK8sPartition(uuid), uuid, value),
-                        "etcd::Reader",
+                        "config_client::Reader",
                         GetConfigK8sPartitionInstanceId(uuid));
     task_util::WaitForIdle();
     TASK_UTIL_EXPECT_EQ(1, GetConfigK8sPartitionUUIDReadRetryCount(uuid));
@@ -1833,12 +1599,12 @@ TEST_F(ConfigK8sJsonParserTest, MissingFQNameField)
     TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
     TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
 
-    // Update the VM entry with missing fq-name field
+    // Update the VM entry with missing fq-name field (does nothing)
     FeedEventsJson();
 
     // Verify that VM object is gone
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
+    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
+    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
 
     // Delete the VM entry
     FeedEventsJson();
