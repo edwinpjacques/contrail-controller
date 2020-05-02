@@ -15,16 +15,18 @@
 #include "config-client-mgr/config_client_manager.h"
 #include "config-client-mgr/config_k8s_client.h"
 #include "config-client-mgr/config_factory.h"
-#include "database/etcd/eql_if.h"
+#include "database/k8s/k8s_client.h"
 #include "ifmap/client/config_json_parser.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
 using namespace std;
-using etcd::etcdql::EtcdIf;
-using etcd::etcdql::EtcdResponse;
-using etcd::etcdql::WatchAction;
+using std::string;
+using k8s::client::K8sClient;
+using k8s::client::K8sUrl;
+using k8s::client::DomPtr;
+using k8s::client::GetCb;
 using contrail_rapidjson::StringBuffer;
 using contrail_rapidjson::Writer;
 
@@ -33,70 +35,61 @@ static int max_yield = 4;
 static Document dbDoc_;
 static int db_index = 2;
 
-class EqlIfTest : public EtcdIf {
+class K8sClientTest : public K8sClient {
 public:
-    EqlIfTest(const vector<string> &etcd_hosts,
-              const int port,
-              bool useSsl) : EtcdIf(etcd_hosts,
-                                   port,
-                                   useSsl) {
+    K8sClientTest(const K8sUrl &k8sUrl,
+                  const std::string &caCerts,
+                  size_t fetchLimit)
+        : K8sClient(k8sUrl, caCerts, fetchLimit)
+    {}
+
+    virtual int Init() 
+    { 
+        // Populate info on supported kinds (needed to support bulk get).
+        KindInfo kindInfo;
+        vector<std::string> kinds;
+        kinds.push_back("BgpAsAService");
+        kinds.push_back("VirtualMachineInterface");
+        kinds.push_back("VirtualNetwork");
+        for (size_t i = 0; i < kinds.size(); ++i)
+        {
+            std::string kind = kinds[i];
+            kindInfo.kind = kind;
+            kindInfoMap_[kind] = kindInfo;            
+        }
+        return 0; 
     }
 
-    virtual bool Connect() { return true; }
-
-    virtual EtcdResponse Get(const string& key,
-                             const string& range_end,
-                             int limit) {
-        EtcdResponse resp;
-        EtcdResponse::kv_map kvs;
-
+    virtual int BulkGet(const std::string &kind, GetCb getCb)
+    {
         if (--db_index == 0) {
-            resp.set_err_code(-1);
-            return resp;
+            return 400;
         }
-
+        
         /**
           * Make sure the database document is populated.
-          * Set error code to 0
           */
-        resp.set_err_code(0);
 
         /* Bulk data is one big document with an "items" member. */
         Value& items = dbDoc_["items"];
 
         for (Value::ConstValueIterator itr = items.Begin();
              itr != items.End(); itr++) {
-                 
-            Value::ConstMemberIterator metadata = itr->FindMember("metadata");
-            Value::ConstMemberIterator uuid = metadata->value.GetObject().FindMember("uid");
             
             /**
               * Get the uuid string and the value from the
               * database Document created from the input file.
               */
-            string uuid_str = uuid->value.GetString();
-            StringBuffer sb;
-            Writer<StringBuffer> writer(sb);
-            itr->Accept(writer);
-            string value_str = sb.GetString();
+            DomPtr domPtr(new Document);
+            domPtr->CopyFrom(*itr, domPtr->GetAllocator());
 
             /**
-              * Populate the key-value store to be saved
-              * in the K8sResponse.
-              * 
-              * In theory there can be more than one entry for the same UUID,
-              * so we store the data into a multimap.
+              * Invoke the callback.
               */
-            kvs.insert(pair<string, string> (uuid_str, value_str));
+            getCb(domPtr);
         }
 
-        /**
-          * Save the kvs in the EtcdResponse and return
-          * to caller.
-          */
-        resp.set_kv_map(kvs);
-
-        return resp;
+        return 200;
     }
 
     static void ParseDatabase(string db_file) {
@@ -141,33 +134,9 @@ public:
 
     Document *ev_load() { return &evDoc_; }
 
-    string GetJsonValue(size_t index) 
+    // All the test data consists of an array of objects.
+    void ParseEventsJson(string events_file) 
     {
-        string value_str;
-
-        // Each event is a nested document.  Skip to the next one to be read.
-        Value::Array events = evDoc_.GetArray();
-
-        // trivial case, simply return
-        if (events.Empty()) {
-            return value_str;
-        }
-
-        // make sure index is not out of range
-        if (events.Size() <= index) {
-            return value_str;
-        }
-
-        Value &val = events[index];
-        StringBuffer sb;
-        Writer<StringBuffer> writer(sb);
-        val.Accept(writer);
-        value_str = sb.GetString();
-        return (value_str);
-    }
-
-    // All the test data is an array of documents.
-    void ParseEventsJson(string events_file) {
         string json_events = FileRead(events_file);
         assert(json_events.size() != 0);
 
@@ -184,10 +153,8 @@ public:
         }
     }
 
-    void FeedEventsJson() {
-        EtcdResponse resp;
-        resp.set_err_code(0);
-
+    void FeedEventsJson() 
+    {
         // Each event is a nested document.  Skip to the next one to be read.
         Value::Array events = evDoc_.GetArray();
 
@@ -206,43 +173,25 @@ public:
             Value::MemberIterator type = event.FindMember("type");
             string type_str = type->value.GetString();
 
-            Value::MemberIterator object = event.FindMember("object");
             Value::MemberIterator metadata;
             Value::MemberIterator uid;
             string uid_str;
 
-            if (object != event.MemberEnd()) {
-                metadata = object->value.FindMember("metadata");
-                uid = metadata->value.FindMember("uid");
-                uid_str = uid->value.GetString();
-            }
-
-            if (type_str == "ADDED") {
-                resp.set_action(WatchAction(0));
-            } else if (type_str == "MODIFIED") {
-                resp.set_action(WatchAction(1));
-            } else if (type_str == "DELETED") {
-                resp.set_action(WatchAction(2));
-            } else if (type_str == "PAUSED") {
+            if (type_str == "PAUSED") {
                 break;
             }
-            assert((resp.action() >= WatchAction(0)) &&
-                   (resp.action() <= (WatchAction(2))));
-            resp.set_key(uid_str);
-
-            StringBuffer sb;
-            Writer<StringBuffer> writer(sb);
-            object->value.Accept(writer);
-            string value_str = sb.GetString();
-            resp.set_val(value_str);
             
-            ConfigK8sClient::ProcessResponse(resp);
+            Value::MemberIterator object = event.FindMember("object");
+            DomPtr domPtr(new Document);
+            domPtr->CopyFrom(object->value, domPtr->GetAllocator());
+
+            ConfigK8sClient::ProcessResponse(type_str, domPtr);
         }
         task_util::WaitForIdle();
     }
 
     static string FileRead(const string &filename) {
-        return (EqlIfTest::FileRead(filename));
+        return (K8sClientTest::FileRead(filename));
     }
 
 private:

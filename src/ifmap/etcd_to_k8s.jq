@@ -73,7 +73,7 @@ def status_data:
       end
       + {"fqName": .fq_name}
       + {"state": "Success"}
-      + ( [ to_entries | .[] | select(.key | endswith("_refs")) ] | from_entries | ref_data)
+      + ( [ to_entries | .[] | select(.key | endswith("_refs")) | .key = (.key | sub("_refs";"_references")) ] | from_entries | ref_data)
     ;
 
 # Convert etcd database event list into a list of Kubernetes watch objects.

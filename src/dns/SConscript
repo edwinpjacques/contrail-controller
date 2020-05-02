@@ -25,7 +25,7 @@ env.Prepend(CPPPATH = env['TOP'] + '/bgp')
 k8s_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
 
 if k8s_incl:
-    env.Prepend(LIBS = ['etcdql', 'protobuf', 'grpc++', 'grpc', 'z'])
+    env.Prepend(LIBS = ['k8s_client', 'restclient-cpp'])
 
 env.Prepend(LIBS=['ifmap_vnc', 'ifmap_server', 'ifmap_common', 'net', 'config_client_mgr',
                   'ifmapio', 'xmpp', 'sandeshvns', 'peer_sandesh',

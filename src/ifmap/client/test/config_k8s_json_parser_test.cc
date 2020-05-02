@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2020 Juniper Networks, Inc. All rights reserved.
  */
 
 #include "ifmap/ifmap_factory.h"
@@ -40,59 +40,9 @@ class ConfigK8sJsonPartitionTest : public ConfigK8sPartition
 public:
     static const int kUUIDReadRetryTimeInMsec = 300000;
     ConfigK8sJsonPartitionTest(ConfigK8sClient *client, size_t idx)
-        : ConfigK8sPartition(client, idx),
-          retry_time_ms_(kUUIDReadRetryTimeInMsec)
+        : ConfigK8sPartition(client, idx)
     {
     }
-
-    virtual int UUIDRetryTimeInMSec(const UUIDCacheEntry *obj) const
-    {
-        return retry_time_ms_;
-    }
-
-    void SetRetryTimeInMSec(int time)
-    {
-        retry_time_ms_ = time;
-    }
-
-    uint32_t GetUUIDReadRetryCount(string &uuid)
-    {
-        string uuid_key = uuid.substr(uuid.rfind('/') + 1);
-        const UUIDCacheEntry *obj = GetUUIDCacheEntry(uuid_key);
-        if (obj)
-            return (obj->GetRetryCount());
-        return 0;
-    }
-
-    void RestartTimer(UUIDCacheEntry *obj, string &uuid,
-                      string &value)
-    {
-        obj->GetRetryTimer()->Cancel();
-        obj->GetRetryTimer()->Start(10,
-                                    boost::bind(
-                                        &ConfigK8sPartition::UUIDCacheEntry::
-                                            K8sReadRetryTimerExpired,
-                                        obj, uuid, value),
-                                    boost::bind(
-                                        &ConfigK8sPartition::UUIDCacheEntry::
-                                            K8sReadRetryTimerErrorHandler,
-                                        obj));
-    }
-
-    void FireUUIDReadRetryTimer(string &uuid, string &value)
-    {
-        UUIDCacheEntry *obj = GetUUIDCacheEntry(uuid);
-        if (obj)
-        {
-            if (obj->IsRetryTimerCreated())
-            {
-                RestartTimer(obj, uuid, value);
-            }
-        }
-    }
-
-private:
-    int retry_time_ms_;
 };
 
 class ConfigK8sJsonParserTest : public ::testing::Test
@@ -173,7 +123,7 @@ protected:
         config_k8s_client_ = dynamic_cast<ConfigK8sClientTest *>(
             config_client_manager_->config_db_client());
 
-        // Disable etcd watcher
+        // Disable K8s watcher
         config_k8s_client_->set_watch_disable(true);
 
         // Link config client manager to ifmap_server
@@ -182,7 +132,7 @@ protected:
 
     ConfigClientOptions GetConfigOptions()
     {
-        config_options_.config_db_use_etcd = true;
+        config_options_.config_db_use_k8s = true;
         return config_options_;
     }
 
@@ -260,7 +210,7 @@ protected:
 
     void ParseDatabase(std::string events_file)
     {
-        EqlIfTest::ParseDatabase(events_file);
+        K8sClientTest::ParseDatabase(events_file);
     }
 
     void ParseEventsJson(std::string events_file)
@@ -274,49 +224,21 @@ protected:
         config_k8s_client_->FeedEventsJson();
     }
 
-    string GetJsonValue(size_t index)
-    {
-        string val = config_k8s_client_->GetJsonValue(index);
-        return val;
-    }
-
     ConfigK8sJsonPartitionTest *GetConfigK8sPartition(
         string &uuid)
     {
-        ConfigK8sClientTest *config_etcd_client =
+        ConfigK8sClientTest *config_k8s_client =
             dynamic_cast<ConfigK8sClientTest *>(
                 config_client_manager_.get()->config_db_client());
-        return (dynamic_cast<ConfigK8sJsonPartitionTest *>(config_etcd_client->GetPartition(uuid)));
+        return (dynamic_cast<ConfigK8sJsonPartitionTest *>(config_k8s_client->GetPartition(uuid)));
     }
 
     int GetConfigK8sPartitionInstanceId(string &uuid)
     {
-        ConfigK8sClientTest *config_etcd_client =
+        ConfigK8sClientTest *config_k8s_client =
             dynamic_cast<ConfigK8sClientTest *>(
                 config_client_manager_.get()->config_db_client());
-        return (config_etcd_client->GetPartition(uuid)->GetInstanceId());
-    }
-
-    uint32_t GetConfigK8sPartitionUUIDReadRetryCount(string uuid)
-    {
-        ConfigK8sClientTest *config_etcd_client =
-            dynamic_cast<ConfigK8sClientTest *>(
-                config_client_manager_.get()->config_db_client());
-        ConfigK8sJsonPartitionTest *config_etcd_partition =
-            dynamic_cast<ConfigK8sJsonPartitionTest *>(
-                config_etcd_client->GetPartition(uuid));
-        return (config_etcd_partition->GetUUIDReadRetryCount(uuid));
-    }
-
-    void SetUUIDRetryTimeInMSec(string uuid, int time)
-    {
-        ConfigK8sClientTest *config_etcd_client =
-            dynamic_cast<ConfigK8sClientTest *>(
-                config_client_manager_.get()->config_db_client());
-        ConfigK8sJsonPartitionTest *config_etcd_partition =
-            dynamic_cast<ConfigK8sJsonPartitionTest *>(
-                config_etcd_client->GetPartition(uuid));
-        config_etcd_partition->SetRetryTimeInMSec(time);
+        return (config_k8s_client->GetPartition(uuid)->GetInstanceId());
     }
 
     EventManager evm_;
@@ -1488,75 +1410,6 @@ TEST_F(ConfigK8sJsonParserTest, ServerParser16InParts)
     TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") == NULL);
 }
 
-// Verify out of order add sequence for ref and parent
-// In 3 separate messages:
-// 1) create link(vr,vm), then vr-with-properties, then vm-with-properties,
-// 2) create link(vr,gsc), then gsc-with-properties
-// 3) delete link(vr,gsc), then delete gsc, then delete vr
-TEST_F(ConfigK8sJsonParserTest, DISABLED_ServerParser17InParts)
-{
-    IFMapTable *vrtable = IFMapTable::FindTable(&db_, "virtual-router");
-    TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
-    IFMapTable *vmtable = IFMapTable::FindTable(&db_, "virtual-machine");
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    IFMapTable *gsctable = IFMapTable::FindTable(&db_, "global-system-config");
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    ParseEventsJson(
-        "controller/src/ifmap/testdata/k8s_server_parser_test16_p2.json");
-    FeedEventsJson();
-    task_util::WaitForIdle();
-    string uuid = "8c5eeb87-0b08-4724-b53f-0a0368055374";
-    // reference the "modified" event for the (above) uuid
-    string value = GetJsonValue(1);
-    SetUUIDRetryTimeInMSec(uuid, 100);
-    task_util::TaskFire(boost::bind(
-                            &ConfigK8sJsonPartitionTest::FireUUIDReadRetryTimer,
-                            GetConfigK8sPartition(uuid), uuid, value),
-                        "config_client::Reader",
-                        GetConfigK8sPartitionInstanceId(uuid));
-    task_util::WaitForIdle();
-    TASK_UTIL_EXPECT_EQ(1, GetConfigK8sPartitionUUIDReadRetryCount(uuid));
-    FeedEventsJson();
-    FeedEventsJson();
-    task_util::WaitForIdle();
-    TASK_UTIL_EXPECT_EQ(0, GetConfigK8sPartitionUUIDReadRetryCount(uuid));
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "gsc:vr1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "gsc:vr1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_EQ(1, gsctable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vrtable->Size());
-    TASK_UTIL_EXPECT_EQ(1, vmtable->Size());
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc")->Find(IFMapOrigin(IFMapOrigin::CASSANDRA)) != NULL);
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "gsc:vr1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") != NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("virtual-router", "gsc:vr1"),
-                              NodeLookup("virtual-machine", "vm1"),
-                              "virtual-router-virtual-machine") != NULL);
-    TASK_UTIL_EXPECT_TRUE(LinkLookup(
-                              NodeLookup("global-system-config", "gsc"),
-                              NodeLookup("virtual-router", "gsc:vr1"),
-                              "global-system-config-virtual-router") != NULL);
-
-    FeedEventsJson();
-    FeedEventsJson();
-    FeedEventsJson();
-    TASK_UTIL_EXPECT_EQ(0, vrtable->Size());
-    TASK_UTIL_EXPECT_EQ(0, vmtable->Size());
-    TASK_UTIL_EXPECT_EQ(0, gsctable->Size());
-
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-router", "gsc:vr1") == NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("virtual-machine", "vm1") == NULL);
-    TASK_UTIL_EXPECT_TRUE(NodeLookup("global-system-config", "gsc") == NULL);
-}
-
 // Validate the handling of object without type field
 // Steps:
 // 1. Add the VM object
@@ -1731,8 +1584,8 @@ int main(int argc, char **argv)
         boost::factory<ConfigK8sClientTest *>());
     ConfigFactory::Register<ConfigK8sPartition>(
         boost::factory<ConfigK8sJsonPartitionTest *>());
-    ConfigFactory::Register<etcd::etcdql::EtcdIf>(
-        boost::factory<EqlIfTest *>());
+    ConfigFactory::Register<k8s::client::K8sClient>(
+        boost::factory<K8sClientTest *>());
     ConfigFactory::Register<ConfigJsonParserBase>(
         boost::factory<ConfigJsonParser *>());
     int status = RUN_ALL_TESTS();

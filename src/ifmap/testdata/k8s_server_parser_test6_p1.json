@@ -30,7 +30,7 @@
           "vr1"
         ],
         "state": "Success",
-        "virtualMachineRefs": [
+        "virtualMachineReferences": [
           {
             "attributes": null,
             "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"
@@ -53,7 +53,7 @@
           "vr1"
         ],
         "state": "Success",
-        "virtualMachineRefs": [
+        "virtualMachineReferences": [
           {
             "attributes": null,
             "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"
@@ -96,7 +96,7 @@
           "vr1"
         ],
         "state": "Success",
-        "virtualMachineRefs": [
+        "virtualMachineReferences": [
           {
             "attributes": null,
             "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"

@@ -41,7 +41,7 @@
           "ZRDM3SEGW02_fw_oam_BgpAAS_name"
         ],
         "state": "Success",
-        "virtualMachineInterfaceRefs": [
+        "virtualMachineInterfaceReferences": [
           {
             "attributes": null,
             "uid": "ef36eac3-c5ba-4947-993a-6bc2c6b3d326"

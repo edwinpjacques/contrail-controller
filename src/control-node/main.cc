@@ -216,7 +216,7 @@ void ReConfigSignalHandler(const boost::system::error_code &error, int sig,
 int main(int argc, char *argv[]) {
     // Process options from command-line and configuration file.
     if (!options.Parse(evm, argc, argv)) {
-        CONTROL_NODE_EXIT("Invalid command line arguments");
+        exit(1);
     }
 
     srand(unsigned(time(NULL)));
