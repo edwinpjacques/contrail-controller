@@ -48,10 +48,21 @@ def spec_data:
     | del(.perms2) 
     | del(.type) 
     | del(.uuid)
+    | del(.event)
+    | if (.parent_uuid != null) then
+        . +
+        { "parent": {
+              "apiVersion": "core.contrail.juniper.net/v1alpha1",
+              "kind": .parent_type | type_case,
+              "uid": .parent_uuid
+            }
+        }
+      else 
+        .
+      end
     | del(.parent_type)
     | del(.parent_uuid)
     | del(.parent_name)
-    | del(.event)
     | ( [ to_entries | .[] | select(.key | endswith("_refs") | not) ] | from_entries )
     | recurse_field_case;
 
@@ -60,18 +71,10 @@ def spec_data:
 # Find all keys with "_refs" at the end and create ref entry. 
 # Finally, add the status
 def status_data:
-  . | 
-      if (.parent_uuid != null) then
-        { "parent": {
-              "apiVersion": "core.contrail.juniper.net/v1alpha1",
-              "kind": .parent_type | type_case,
-              "uid": .parent_uuid
-            }
-        }
-      else 
-        {}
-      end
-      + {"fqName": .fq_name}
+  . | del(.parent_type)
+    | del(.parent_uuid)
+    | del(.parent_name)
+    |   {"fqName": .fq_name}
       + {"state": "Success"}
       + ( [ to_entries | .[] | select(.key | endswith("_refs")) | .key = (.key | sub("_refs";"_references")) ] | from_entries | ref_data)
     ;

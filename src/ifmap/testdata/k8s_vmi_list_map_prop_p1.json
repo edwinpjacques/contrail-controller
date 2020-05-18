@@ -24,13 +24,14 @@
       "metadata": {
         "uid": "2f560900-2a1a-44c1-b248-6c87201fc8c6"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "Domain",
           "uid": "1b7a7728-97e5-40f1-8970-10cc7c1ab52e"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "default-domain",
           "service"
@@ -65,14 +66,14 @@
               "protocol": "UDP"
             }
           ]
-        }
-      },
-      "status": {
+        },
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "Project",
           "uid": "2f560900-2a1a-44c1-b248-6c87201fc8c6"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "default-domain",
           "service",
@@ -106,14 +107,14 @@
               "protocol": "TCP"
             }
           ]
-        }
-      },
-      "status": {
+        },
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "Project",
           "uid": "2f560900-2a1a-44c1-b248-6c87201fc8c6"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "default-domain",
           "service",
@@ -147,14 +148,14 @@
               "protocol": "TCP"
             }
           ]
-        }
-      },
-      "status": {
+        },
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "Project",
           "uid": "2f560900-2a1a-44c1-b248-6c87201fc8c6"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "default-domain",
           "service",
@@ -172,13 +173,14 @@
       "metadata": {
         "uid": "2f560900-2a1a-44c1-b248-6c87201fc8c6"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "Domain",
           "uid": "1b7a7728-97e5-40f1-8970-10cc7c1ab52e"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "default-domain",
           "service"

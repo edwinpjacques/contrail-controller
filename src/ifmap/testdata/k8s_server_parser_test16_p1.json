@@ -118,13 +118,14 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "GlobalSystemConfig",
           "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "gsc",
           "vr1"

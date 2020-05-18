@@ -42,14 +42,14 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
-        "draftModeState": "created"
-      },
-      "status": {
+        "draftModeState": "created",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "PolicyManagement",
           "uid": "f178bfd9-16bc-4a42-8187-9b09fa544cb1"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "draft-policy-management",
           "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
@@ -70,14 +70,14 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
-        "draftModeState": "updated"
-      },
-      "status": {
+        "draftModeState": "updated",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "PolicyManagement",
           "uid": "f178bfd9-16bc-4a42-8187-9b09fa544cb1"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "draft-policy-management",
           "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
@@ -98,14 +98,14 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
-        "draftModeState": "updated"
-      },
-      "status": {
+        "draftModeState": "updated",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "PolicyManagement",
           "uid": "f178bfd9-16bc-4a42-8187-9b09fa544cb1"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "draft-policy-management",
           "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
@@ -126,14 +126,14 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
-        "draftModeState": ""
-      },
-      "status": {
+        "draftModeState": "",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "PolicyManagement",
           "uid": "f178bfd9-16bc-4a42-8187-9b09fa544cb1"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "normal-policy-management",
           "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
@@ -188,14 +188,14 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
-        "draftModeState": ""
-      },
-      "status": {
+        "draftModeState": "",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "PolicyManagement",
           "uid": "f178bfd9-16bc-4a42-8187-9b09fa544cb1"
-        },
+        }
+      },
+      "status": {
         "fqName": [
           "normal-policy-management",
           "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
