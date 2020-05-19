@@ -41,7 +41,7 @@ public:
     void MetadataRegister(const std::string &metadata, MetadataParseFn parser);
     void MetadataClear(const std::string &module);
     virtual bool Receive(const ConfigCass2JsonAdapter &adapter,
-                 bool add_change);
+                 bool add_change, IFMapOrigin::Origin origin = IFMapOrigin::CASSANDRA);
     void ifmap_server_set(IFMapServer *ifmap_server) {
              ifmap_server_ = ifmap_server;
          };
