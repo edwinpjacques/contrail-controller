@@ -738,6 +738,13 @@ public:
     explicit BgpConfigManager(BgpServer *server);
     virtual ~BgpConfigManager();
 
+    static const char* SetKMasterInstance(const std::string& s) { 
+        size_t n = strlen(kMasterInstance); 
+        char* ret = strncpy(const_cast<char*>(kMasterInstance), s.c_str(), n);
+        ret[n - 1] = '\0';
+        return ret;
+    }
+
     void RegisterObservers(const Observers &obs) { obs_.push_back(obs); }
 
     virtual void Terminate() = 0;
