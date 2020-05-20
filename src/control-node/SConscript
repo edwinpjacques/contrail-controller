@@ -12,10 +12,6 @@ def MapBuildDir(list):
 
 env = BuildEnv.Clone()
 
-k8s_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
-if k8s_incl:
-    env.Append(CXXFLAGS = '-DCONTRAIL_K8S_CONFIG')
-
 libcontrol_node = env.Library('control_node', ['control_node.cc'])
 
 env.Append(CPPPATH = [env['TOP'] + '/base/sandesh'])
@@ -69,11 +65,6 @@ env.Alias("control-node:node_mgr", sdist_gen)
 libcontrail_control_uve = env.Library('control_node_uve',
                                       ControlNodeSandeshGenSrcs);
 
-k8s_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
-
-if k8s_incl:
-    env.Prepend(LIBS=[ 'k8s_client', 'restclient-cpp' ])
-
 env.Prepend(LIBS=['bgp',
                   'bgp_ifmap_config',
                   'bgp_schema',
@@ -125,7 +116,8 @@ env.Prepend(LIBS=['bgp',
                   'boost_chrono',
                   'boost_program_options',
                   'boost_filesystem',
-                  'crypto', 'ssl'])
+                  'crypto', 'ssl',
+                  'k8s_client', 'restclient-cpp' ])
 
 if platform.system() != 'Darwin':
     env.Append(LIBS=['rt'])

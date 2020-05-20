@@ -247,13 +247,11 @@ int main(int argc, char *argv[]) {
                         Sandesh::StringToLevel(options.log_level())));
     }
 
-#ifdef CONTRAIL_K8S_CONFIG
     // Override some global constants if we're running K8s.
     if (options.using_k8s_client())
     {
         BgpConfigManager::SetKMasterInstance("default-domain:default-project:ip-fabric:default");
     }
-#endif
 
     int num_threads_to_tbb = TaskScheduler::GetDefaultThreadCount() +
         ConfigClientManager::GetNumWorkers();

@@ -42,11 +42,6 @@ env.Append(LIBPATH = env['TOP'] + '/xml')
 env.Append(LIBPATH = env['TOP'] + '/schema')
 env.Append(CPPPATH = env['TOP'] + '/tools/sandesh/library/common')
 
-k8s_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
-
-if k8s_incl:
-    env.Prepend(LIBS = [ 'k8s_client', 'restclient-cpp' ])
-
 env.Prepend(LIBS = [
                     'task_test',
                     'bgptest',
@@ -102,7 +97,11 @@ env.Prepend(LIBS = [
                     'rabbitmq',
                     'cassandra',
                     'gendb',
-                    'boost_chrono'])
+                    'boost_chrono',
+                    'k8s_client',
+                    'restclient-cpp'
+                   ])
+
 
 if platform.system() != 'Darwin':
     env.Append(LIBS=['rt'])

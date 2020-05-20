@@ -21,11 +21,6 @@ env.Append(LIBPATH = env['TOP'] + '/xml')
 env.Append(LIBPATH = env['TOP'] + '/xmpp')
 env.Append(LIBPATH = env['TOP'] + '/http/client')
 
-k8s_incl = os.environ.get('CONTRAIL_K8S_CONFIG');
-
-if k8s_incl:
-    env.Prepend(LIBS = ['k8s_client', 'restclient-cpp'])
-
 env.Prepend(LIBS = ['ifmap_server', 'config_client_mgr', 'ifmapio', 'xmpp',
                     'peer_sandesh', 'sandesh', 'http', 'http_parser', 'httpc',
                     'curl', 'sandeshvns', 'process_info', 'io', 'control_node',
@@ -33,7 +28,8 @@ env.Prepend(LIBS = ['ifmap_server', 'config_client_mgr', 'ifmapio', 'xmpp',
                     'crypto', 'ssl', 'boost_regex', 'boost_chrono',
                     'cassandra_cql', 'SimpleAmqpClient', 'rabbitmq',
                     'cassandra', 'gendb', 'ifmapio',
-                    'boost_program_options', 'libbgp_schema', 'boost_chrono'])
+                    'boost_program_options', 'libbgp_schema', 'boost_chrono',
+                    'k8s_client', 'restclient-cpp'])
 
 if platform.system() != 'Darwin':
     env.Append(LIBS = ['rt'])
