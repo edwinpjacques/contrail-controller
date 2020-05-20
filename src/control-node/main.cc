@@ -53,7 +53,6 @@
 #include "xmpp/xmpp_init.h"
 #include "xmpp/xmpp_sandesh.h"
 #include "xmpp/xmpp_server.h"
-#include "cmn/agent.h"
 
 using namespace std;
 using namespace boost::asio::ip;
@@ -250,12 +249,9 @@ int main(int argc, char *argv[]) {
 
 #ifdef CONTRAIL_K8S_CONFIG
     // Override some global constants if we're running K8s.
-    if (options.using_k8s_client)
+    if (options.using_k8s_client())
     {
         BgpConfigManager::SetKMasterInstance("default-domain:default-project:ip-fabric:default");
-        Agent::set_fabric_vrf_name("default-domain:default-project:ip-fabric:default");
-        Agent::set_linklocal_vn_name("default-domain:default-project:link-local");
-        Agent::set_linklocal_vrf_name("default-domain:default-project:link-local:link-local");
     }
 #endif
 
