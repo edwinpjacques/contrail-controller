@@ -7,11 +7,12 @@
       "metadata": {
         "uid": "1b7a7728-97e5-40f1-8970-10cc7c1ab52e"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "default-domain"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -25,6 +26,10 @@
         "uid": "2f560900-2a1a-44c1-b248-6c87201fc8c6"
       },
       "spec": {
+        "fqName": [
+          "default-domain",
+          "service"
+        ],
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "Domain",
@@ -32,10 +37,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "default-domain",
-          "service"
-        ],
         "state": "Success"
       }
     }
@@ -49,6 +50,11 @@
         "uid": "c4287577-b6af-4cca-a21d-6470a08af68a"
       },
       "spec": {
+        "fqName": [
+          "default-domain",
+          "service",
+          "c4287577-b6af-4cca-a21d-6470a08af68a"
+        ],
         "virtualMachineInterfaceBindings": {
           "key-value-pair": {
             "hostId": "site.one.com",
@@ -74,11 +80,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "default-domain",
-          "service",
-          "c4287577-b6af-4cca-a21d-6470a08af68a"
-        ],
         "state": "Success"
       }
     }
@@ -95,6 +96,11 @@
         "uid": "c4287577-b6af-4cca-a21d-6470a08af68a"
       },
       "spec": {
+        "fqName": [
+          "default-domain",
+          "service",
+          "c4287577-b6af-4cca-a21d-6470a08af68a"
+        ],
         "virtualMachineInterfaceBindings": {
           "key-value-pair": {
             "hostId": "site.one.com"
@@ -115,11 +121,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "default-domain",
-          "service",
-          "c4287577-b6af-4cca-a21d-6470a08af68a"
-        ],
         "state": "Success"
       }
     }
@@ -136,6 +137,11 @@
         "uid": "c4287577-b6af-4cca-a21d-6470a08af68a"
       },
       "spec": {
+        "fqName": [
+          "default-domain",
+          "service",
+          "c4287577-b6af-4cca-a21d-6470a08af68a"
+        ],
         "virtualMachineInterfaceBindings": {
           "key-value-pair": {
             "hostId": "site.one.com"
@@ -156,11 +162,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "default-domain",
-          "service",
-          "c4287577-b6af-4cca-a21d-6470a08af68a"
-        ],
         "state": "Success"
       }
     }
@@ -174,6 +175,10 @@
         "uid": "2f560900-2a1a-44c1-b248-6c87201fc8c6"
       },
       "spec": {
+        "fqName": [
+          "default-domain",
+          "service"
+        ],
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "Domain",
@@ -181,10 +186,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "default-domain",
-          "service"
-        ],
         "state": "Success"
       }
     }
@@ -197,11 +198,12 @@
       "metadata": {
         "uid": "1b7a7728-97e5-40f1-8970-10cc7c1ab52e"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "default-domain"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }

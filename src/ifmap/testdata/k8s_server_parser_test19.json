@@ -7,11 +7,12 @@
       "metadata": {
         "uid": "f178bfd9-16bc-4a42-8187-9b09fa544cb1"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "draft-policy-management"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -24,11 +25,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e81-b58d-d196211eb4d9"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "normal-policy-management"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -42,6 +44,10 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
+        "fqName": [
+          "draft-policy-management",
+          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
+        ],
         "draftModeState": "created",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
@@ -50,10 +56,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "draft-policy-management",
-          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
-        ],
         "state": "Success"
       }
     }
@@ -70,6 +72,10 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
+        "fqName": [
+          "draft-policy-management",
+          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
+        ],
         "draftModeState": "updated",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
@@ -78,10 +84,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "draft-policy-management",
-          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
-        ],
         "state": "Success"
       }
     }
@@ -98,6 +100,10 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
+        "fqName": [
+          "draft-policy-management",
+          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
+        ],
         "draftModeState": "updated",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
@@ -106,10 +112,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "draft-policy-management",
-          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
-        ],
         "state": "Success"
       }
     }
@@ -126,6 +128,10 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
+        "fqName": [
+          "normal-policy-management",
+          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
+        ],
         "draftModeState": "",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
@@ -134,10 +140,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "normal-policy-management",
-          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
-        ],
         "state": "Success"
       }
     }
@@ -153,11 +155,12 @@
       "metadata": {
         "uid": "f178bfd9-16bc-4a42-8187-9b09fa544cb1"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "draft-policy-management"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -170,11 +173,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e81-b58d-d196211eb4d9"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "normal-policy-management"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -188,6 +192,10 @@
         "uid": "40fd65df-fc91-4b08-92fb-d1f57a67d99c"
       },
       "spec": {
+        "fqName": [
+          "normal-policy-management",
+          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
+        ],
         "draftModeState": "",
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
@@ -196,10 +204,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "normal-policy-management",
-          "3438e2fa-bfcd-4745-bd58-52713ae27ac4"
-        ],
         "state": "Success"
       }
     }

@@ -7,11 +7,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e81-b58d-d196211eb4d9"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -24,11 +25,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e82-b58d-d196211eb4da"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn2"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -41,11 +43,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e83-b58d-d196211eb4db"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn3"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -61,11 +64,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e83-b58d-d196211eb4db"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn3"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -81,11 +85,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e84-b58d-d196211eb4dc"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn4"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -98,11 +103,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e85-b58d-d196211eb4dd"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn5"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -118,11 +124,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e85-b58d-d196211eb4dd"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn5"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -135,11 +142,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e84-b58d-d196211eb4dc"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn4"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -152,11 +160,12 @@
       "metadata": {
         "uid": "634ae160-d3ef-4e82-b58d-d196211eb4da"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vn2"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }

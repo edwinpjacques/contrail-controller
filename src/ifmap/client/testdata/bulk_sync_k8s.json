@@ -32,14 +32,14 @@
           "loopCount": 0,
           "passive": true
         },
-        "displayName": "BGPaaS FW OAM Resource"
-      },
-      "status": {
+        "displayName": "BGPaaS FW OAM Resource",
         "fqName": [
           "default-domain",
           "NGSG-23414-T-01",
           "ZRDM3SEGW02_fw_oam_BgpAAS_name"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success",
         "virtualMachineInterfaceReferences": [
           {
@@ -65,6 +65,11 @@
       },
       "spec": {
         "displayName": "Test_Vertica2-vertica_private_network_port-wr4h2tycwav3",
+        "fqName": [
+          "default-domain",
+          "rprb-26071-rdm3-BE",
+          "Test_Vertica2-vertica_private_network_port-wr4h2tycwav3"
+        ],
         "virtualMachineInterfaceBindings": {
           "hostId": "rdm3r19c010.rdm3.cci.att.com",
           "vifType": "vrouter",
@@ -79,11 +84,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "default-domain",
-          "rprb-26071-rdm3-BE",
-          "Test_Vertica2-vertica_private_network_port-wr4h2tycwav3"
-        ],
         "state": "Success"
       }
     },
@@ -104,14 +104,14 @@
       "spec": {
         "displayName": "svc-vn-left",
         "floodUnknownUnicast": false,
-        "virtualNetworkNetworkId": 570
-      },
-      "status": {
         "fqName": [
           "default-domain",
           "vMME-24474-Ericsson-WTC-Lab-vLCP1-4",
           "svc-vn-left"
         ],
+        "virtualNetworkNetworkId": 570
+      },
+      "status": {
         "state": "Success"
       }
     },
@@ -131,14 +131,14 @@
       },
       "spec": {
         "displayName": "svc-vn-left",
-        "floodUnknownUnicast": false
-      },
-      "status": {
+        "floodUnknownUnicast": false,
         "fqName": [
           "default-domain",
           "MNS-25180-L-06Shared",
           "svc-vn-left"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     },
@@ -158,6 +158,11 @@
       },
       "spec": {
         "displayName": "ZRDM3SEGW02_module-0-fw_oam_oam_direct_2_port-dyzi37rbfzeo",
+        "fqName": [
+          "default-domain",
+          "NGSG-23414-T-01",
+          "ZRDM3SEGW02_module-0-fw_oam_oam_direct_2_port-dyzi37rbfzeo"
+        ],
         "virtualMachineInterfaceBindings": {
           "hostId": "rdm3r23c012.rdm3.cci.att.com",
           "vifType": "vrouter",
@@ -172,11 +177,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "default-domain",
-          "NGSG-23414-T-01",
-          "ZRDM3SEGW02_module-0-fw_oam_oam_direct_2_port-dyzi37rbfzeo"
-        ],
         "state": "Success"
       }
     }

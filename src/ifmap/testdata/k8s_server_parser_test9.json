@@ -7,11 +7,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vr1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -24,11 +25,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vm1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -41,11 +43,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vr1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success",
         "virtualMachineReferences": [
           {
@@ -64,11 +67,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vr1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -81,11 +85,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vr1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success",
         "virtualMachineReferences": [
           {

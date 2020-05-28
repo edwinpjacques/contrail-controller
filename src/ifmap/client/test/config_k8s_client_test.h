@@ -37,10 +37,11 @@ static int db_index = 2;
 
 class K8sClientTest : public K8sClient {
 public:
-    K8sClientTest(const K8sUrl &k8sUrl,
+    K8sClientTest(const std::vector<K8sUrl> &k8sUrls,
                   const std::string &caCerts,
+                  size_t rotate,
                   size_t fetchLimit)
-        : K8sClient(k8sUrl, caCerts, fetchLimit)
+        : K8sClient(k8sUrls, caCerts, rotate, fetchLimit)
     {}
 
     virtual int Init() 

@@ -7,105 +7,13 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "gsc",
           "vr1"
-        ],
-        "state": "Success"
-      }
-    }
-  },
-  {
-    "type": "MODIFIED",
-    "object": {
-      "apiVersion": "core.contrail.juniper.net/v1alpha1",
-      "kind": "VirtualRouter",
-      "metadata": {
-        "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
+        ]
       },
-      "spec": {},
       "status": {
-        "fqName": [
-          "gsc",
-          "vr1"
-        ],
-        "state": "Success"
-      }
-    }
-  },
-  {
-    "type": "PAUSED"
-  },
-  {
-    "type": "ADDED",
-    "object": {
-      "apiVersion": "core.contrail.juniper.net/v1alpha1",
-      "kind": "VirtualRouter",
-      "metadata": {
-        "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
-      },
-      "spec": {},
-      "status": {
-        "fqName": [
-          "gsc",
-          "vr1"
-        ],
-        "state": "Success"
-      }
-    }
-  },
-  {
-    "type": "ADDED",
-    "object": {
-      "apiVersion": "core.contrail.juniper.net/v1alpha1",
-      "kind": "VirtualMachine",
-      "metadata": {
-        "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"
-      },
-      "spec": {},
-      "status": {
-        "fqName": [
-          "vm1"
-        ],
-        "state": "Success"
-      }
-    }
-  },
-  {
-    "type": "PAUSED"
-  },
-  {
-    "type": "ADDED",
-    "object": {
-      "apiVersion": "core.contrail.juniper.net/v1alpha1",
-      "kind": "GlobalSystemConfig",
-      "metadata": {
-        "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
-      },
-      "spec": {},
-      "status": {
-        "fqName": [
-          "gsc"
-        ],
-        "state": "Success"
-      }
-    }
-  },
-  {
-    "type": "MODIFIED",
-    "object": {
-      "apiVersion": "core.contrail.juniper.net/v1alpha1",
-      "kind": "GlobalSystemConfig",
-      "metadata": {
-        "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
-      },
-      "spec": {},
-      "status": {
-        "fqName": [
-          "gsc"
-        ],
         "state": "Success"
       }
     }
@@ -119,6 +27,108 @@
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
       "spec": {
+        "fqName": [
+          "gsc",
+          "vr1"
+        ]
+      },
+      "status": {
+        "state": "Success"
+      }
+    }
+  },
+  {
+    "type": "PAUSED"
+  },
+  {
+    "type": "ADDED",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualRouter",
+      "metadata": {
+        "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
+      },
+      "spec": {
+        "fqName": [
+          "gsc",
+          "vr1"
+        ]
+      },
+      "status": {
+        "state": "Success"
+      }
+    }
+  },
+  {
+    "type": "ADDED",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualMachine",
+      "metadata": {
+        "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"
+      },
+      "spec": {
+        "fqName": [
+          "vm1"
+        ]
+      },
+      "status": {
+        "state": "Success"
+      }
+    }
+  },
+  {
+    "type": "PAUSED"
+  },
+  {
+    "type": "ADDED",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "GlobalSystemConfig",
+      "metadata": {
+        "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
+      },
+      "spec": {
+        "fqName": [
+          "gsc"
+        ]
+      },
+      "status": {
+        "state": "Success"
+      }
+    }
+  },
+  {
+    "type": "MODIFIED",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "GlobalSystemConfig",
+      "metadata": {
+        "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
+      },
+      "spec": {
+        "fqName": [
+          "gsc"
+        ]
+      },
+      "status": {
+        "state": "Success"
+      }
+    }
+  },
+  {
+    "type": "MODIFIED",
+    "object": {
+      "apiVersion": "core.contrail.juniper.net/v1alpha1",
+      "kind": "VirtualRouter",
+      "metadata": {
+        "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
+      },
+      "spec": {
+        "fqName": [
+          "gsc",
+          "vr1"
+        ],
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "GlobalSystemConfig",
@@ -126,10 +136,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "gsc",
-          "vr1"
-        ],
         "state": "Success",
         "virtualMachineReferences": [
           {
@@ -151,12 +157,13 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "gsc",
           "vr1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success",
         "virtualMachineReferences": [
           {
@@ -175,11 +182,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "gsc"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -195,12 +203,13 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "gsc",
           "vr1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -216,12 +225,13 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "gsc",
           "vr1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }

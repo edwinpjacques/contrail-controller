@@ -8,6 +8,10 @@
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
       "spec": {
+        "fqName": [
+          "gsc",
+          "vr1"
+        ],
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "GlobalSystemConfig",
@@ -15,10 +19,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "gsc",
-          "vr1"
-        ],
         "state": "Success"
       }
     }
@@ -32,6 +32,10 @@
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
       "spec": {
+        "fqName": [
+          "gsc",
+          "vr1"
+        ],
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "GlobalSystemConfig",
@@ -39,10 +43,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "gsc",
-          "vr1"
-        ],
         "state": "Success",
         "virtualMachineReferences": [
           {
@@ -64,11 +64,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vm1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -84,11 +85,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "gsc"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -105,6 +107,10 @@
         "uid": "8c5eeb87-0b08-4724-b53f-0a0368055374"
       },
       "spec": {
+        "fqName": [
+          "gsc",
+          "vr1"
+        ],
         "parent": {
           "apiVersion": "core.contrail.juniper.net/v1alpha1",
           "kind": "GlobalSystemConfig",
@@ -112,10 +118,6 @@
         }
       },
       "status": {
-        "fqName": [
-          "gsc",
-          "vr1"
-        ],
         "state": "Success",
         "virtualMachineReferences": [
           {
@@ -137,11 +139,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4725-b53f-0a0368055375"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "vm1"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }
@@ -154,11 +157,12 @@
       "metadata": {
         "uid": "8c5eeb87-0b08-4b0c-b53f-0a036805575c"
       },
-      "spec": {},
-      "status": {
+      "spec": {
         "fqName": [
           "gsc"
-        ],
+        ]
+      },
+      "status": {
         "state": "Success"
       }
     }

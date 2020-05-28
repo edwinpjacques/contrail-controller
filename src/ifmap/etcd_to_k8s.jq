@@ -43,8 +43,7 @@ def ref_data:
 # Create key/value pairs for all fields in the spec.
 # filter out any refs
 def spec_data:
-  . | del(.fq_name)
-    | del(.id_perms)
+  . | del(.id_perms)
     | del(.perms2) 
     | del(.type) 
     | del(.uuid)
@@ -71,11 +70,11 @@ def spec_data:
 # Find all keys with "_refs" at the end and create ref entry. 
 # Finally, add the status
 def status_data:
-  . | del(.parent_type)
+  . | del(.fq_name)
+    | del(.parent_type)
     | del(.parent_uuid)
     | del(.parent_name)
-    |   {"fqName": .fq_name}
-      + {"state": "Success"}
+    |   {"state": "Success"}
       + ( [ to_entries | .[] | select(.key | endswith("_refs")) | .key = (.key | sub("_refs";"_references")) ] | from_entries | ref_data)
     ;
 
